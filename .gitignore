@@ -33,6 +33,11 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# scratch / debug — pueden contener credenciales hardcodeadas
+/scratch/
+check_reviews_debug.js
+test_db.ts
+
 # vercel
 .vercel
 
