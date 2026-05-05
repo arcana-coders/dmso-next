@@ -19,13 +19,13 @@ export const productos = pgTable('productos', {
   titulo: text('titulo').notNull(),
   descripcion: text('descripcion'),
   precio: decimal('precio', { precision: 10, scale: 2 }).notNull(),
-  imagenes: jsonb('imagenes').default([]), // Array of image URLs
+  imagenes: jsonb('imagenes').$type<string[]>().notNull().default([]), // Array of image URLs
   categoriaId: integer('categoria_id').references(() => categorias.id),
   stock: integer('stock').default(0),
   activo: boolean('activo').default(true),
   destacado: boolean('destacado').default(false),
-  detalles: jsonb('detalles').default({}),
-  reviews: jsonb('reviews').default([]), // Array of review objects
+  detalles: jsonb('detalles').$type<Record<string, any>>().notNull().default({}),
+  reviews: jsonb('reviews').$type<any[]>().notNull().default([]), // Array of review objects
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
