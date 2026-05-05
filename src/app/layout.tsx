@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { getMenuCategories } from "@/lib/products";
+import CartDrawer from "@/components/layout/CartDrawer";
+import { getMenuCategories, getProducts } from "@/lib/products";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -23,6 +24,10 @@ export const metadata: Metadata = {
   description: "DMSO Puro en México con envío gratis a todo el país. Grado farmacéutico 99.9%.",
   openGraph: { type: 'website', locale: 'es_MX', siteName: 'DMSO México' },
   robots: { index: true, follow: true },
+  icons: {
+    icon: '/icon.svg',
+    apple: '/icon.svg',
+  },
 };
 
 export default async function RootLayout({
@@ -31,6 +36,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const categories = await getMenuCategories();
+  const allProducts = await getProducts();
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -58,9 +64,10 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${plusJakartaSans.variable} ${playfairDisplay.variable} bg-background text-on-background font-body-md antialiased`}>
-        <Navbar categories={categories} />
+        <Navbar categories={categories} products={allProducts} />
         {children}
         <Footer />
+        <CartDrawer />
         {/* Floating WhatsApp Button */}
         <div className="fixed bottom-6 right-6 z-50">
           <button className="bg-dmso-green text-white p-3 rounded-full shadow-lg hover:bg-black transition-colors cursor-pointer border-none flex items-center justify-center">

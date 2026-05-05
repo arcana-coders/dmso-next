@@ -1,27 +1,27 @@
 import React from 'react';
-import { ShieldCheck, Truck, RotateCcw, Lock } from 'lucide-react';
+import { ShieldCheck, Lock, CreditCard, RotateCcw } from 'lucide-react';
 
 export default function TrustBadges() {
   const badges = [
     {
-      icon: <ShieldCheck className="w-6 h-6" />,
-      title: 'Pureza Garantizada',
-      description: '99.9% Grado Farmacéutico'
+      icon: <CreditCard className="w-6 h-6" />,
+      title: 'PayPal Verified',
+      description: 'Pagos 100% Protegidos'
     },
     {
       icon: <Lock className="w-6 h-6" />,
-      title: 'Pago Seguro',
-      description: 'Encriptación SSL de 256 bits'
+      title: 'SSL 256-bit',
+      description: 'Encriptación Bancaria'
     },
     {
-      icon: <Truck className="w-6 h-6" />,
-      title: 'Envío Asegurado',
-      description: 'Cobertura nacional en México'
+      icon: <ShieldCheck className="w-6 h-6" />,
+      title: 'Compra Protegida',
+      description: 'Garantía de Entrega'
     },
     {
       icon: <RotateCcw className="w-6 h-6" />,
-      title: 'Devolución Fácil',
-      description: 'Garantía de satisfacción'
+      title: 'Garantía 30 días',
+      description: 'Satisfacción Total'
     }
   ];
 

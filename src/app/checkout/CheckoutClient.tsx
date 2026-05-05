@@ -78,7 +78,7 @@ const INPUT_CLASS =
 const LABEL_CLASS = 'block text-sm font-medium text-gray-700 mb-1';
 
 export default function CheckoutClient() {
-  const { items, getTotal, clearCart } = useCartStore();
+  const { items, getTotal, clearCart, removeItem } = useCartStore();
   const [mounted, setMounted] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderError, setOrderError] = useState('');
@@ -126,6 +126,7 @@ export default function CheckoutClient() {
     const response = await fetch(`/api/orders/${data.orderID}/capture`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clienteData: formData, items, total }),
     });
     const orderData = await response.json();
     const errorDetail = orderData?.details?.[0];
@@ -235,14 +236,31 @@ export default function CheckoutClient() {
         {/* Listado de productos — solo este bloque puede tener scroll */}
         <div className="space-y-4 mb-6 max-h-64 overflow-y-auto pr-1">
           {items.map((item) => (
-            <div key={item.id} className="flex justify-between items-center py-2">
+            <div key={item.id} className="group flex justify-between items-center py-2">
               <div className="flex items-center space-x-3">
-                <div className="w-14 h-14 bg-gray-50 rounded-lg flex items-center justify-center p-2 shrink-0">
+                <div className="relative w-14 h-14 bg-gray-50 rounded-lg flex items-center justify-center p-2 shrink-0">
                   <img src={item.imagen} alt={item.titulo} className="max-w-full max-h-full object-contain mix-blend-multiply" />
+                  <button 
+                    onClick={() => removeItem(item.id)}
+                    className="absolute -top-2 -left-2 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Eliminar producto"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-800 leading-tight line-clamp-2">{item.titulo}</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">Cant: {item.cantidad}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <p className="text-xs text-gray-500">Cant: {item.cantidad}</p>
+                    <button 
+                      onClick={() => removeItem(item.id)}
+                      className="text-[10px] text-red-600 hover:underline font-medium md:hidden"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
                 </div>
               </div>
               <p className="text-sm font-semibold text-gray-900 shrink-0 ml-3">

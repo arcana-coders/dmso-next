@@ -1,16 +1,32 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronDown, Facebook, Instagram } from 'lucide-react';
+import { useCartStore } from '@/lib/store';
+import SearchModal from './SearchModal';
 
 interface Category {
     nombre: string;
     slug: string;
 }
 
-export default function Navbar({ categories = [] }: { categories?: Category[] }) {
+interface Product {
+    id: number;
+    titulo: string;
+    slug: string;
+    precio: string;
+    imagenes: string[];
+    categoria?: { nombre: string; slug: string } | null;
+}
+
+export default function Navbar({ categories = [], products = [] }: { categories?: Category[]; products?: Product[] }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const router = useRouter();
+    const cartItems = useCartStore((s) => s.items);
+    const openCart = useCartStore((s) => s.openCart);
+    const cartCount = cartItems.reduce((sum, i) => sum + i.cantidad, 0);
 
     // Lock body scroll when menu is open
     useEffect(() => {
@@ -79,11 +95,24 @@ export default function Navbar({ categories = [] }: { categories?: Category[] })
                     </nav>
 
                     {/* Icons & Hamburger */}
-                    <div className="flex items-center gap-4 z-[60]">
+                    <div className="flex items-center gap-2 z-[60]">
+                        {/* Search */}
+                        <div className="hidden sm:block">
+                            <SearchModal products={products as any} />
+                        </div>
+                        
                         {/* Desktop & Mobile Icons */}
                         <div className="flex items-center gap-2 text-primary">
-                            <button className="hover:bg-surface-container p-2 rounded-full transition-colors duration-200 active:scale-95 ease-in-out hidden sm:flex items-center justify-center">
+                            <button
+                                onClick={openCart}
+                                className="relative hover:bg-surface-container p-2 rounded-full transition-colors duration-200 active:scale-95 ease-in-out hidden sm:flex items-center justify-center"
+                            >
                                 <span className="material-symbols-outlined">shopping_cart</span>
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-[#003f87] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center leading-none">
+                                        {cartCount > 99 ? '99+' : cartCount}
+                                    </span>
+                                )}
                             </button>
                             
                             {/* Mobile/Tablet Menu Button */}
@@ -132,11 +161,19 @@ export default function Navbar({ categories = [] }: { categories?: Category[] })
                         ))}
                     </nav>
 
-                    {/* Mobile Only Quick Actions */}
-                    <div className="flex gap-4 pt-4 sm:hidden justify-center">
-                        <button className="bg-white/10 text-white hover:bg-white/20 p-4 rounded-full transition-colors duration-200 flex items-center justify-center gap-2 flex-1">
+                     {/* Mobile Search */}
+                        <div className="flex gap-4 sm:hidden justify-center">
+                            <SearchModal products={products as any} />
+                        </div>
+
+                        {/* Mobile Only Quick Actions */}
+                        <div className="flex gap-4 pt-4 sm:hidden justify-center">
+                        <button
+                            onClick={() => { setIsMenuOpen(false); openCart(); }}
+                            className="bg-white/10 text-white hover:bg-white/20 p-4 rounded-full transition-colors duration-200 flex items-center justify-center gap-2 flex-1"
+                        >
                             <span className="material-symbols-outlined">shopping_cart</span>
-                            <span>Carrito</span>
+                            <span>Carrito{cartCount > 0 ? ` (${cartCount})` : ''}</span>
                         </button>
                     </div>
 

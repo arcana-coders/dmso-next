@@ -106,9 +106,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
                 {/* Right Column: Details */}
                 <div className="flex flex-col">
-                    <ProductInfo 
-                        title={product.titulo} 
-                        price={product.precio.toString()} 
+                    <ProductInfo
+                        id={product.id.toString()}
+                        slug={product.slug}
+                        title={product.titulo}
+                        price={product.precio.toString()}
+                        asin={product.asin || undefined}
+                        imagen={(product.imagenes as string[])?.[0] || ''}
                         reviewsCount={(product.reviews as any[])?.length || 0}
                     />
                     <ProductAccordion 

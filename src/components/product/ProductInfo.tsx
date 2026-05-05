@@ -4,18 +4,30 @@ import { useState } from 'react';
 import { Minus, Plus, ShoppingCart, Star } from 'lucide-react';
 import TrustBadges from './TrustBadges';
 import { cleanupText } from '@/lib/utils';
+import { useCartStore } from '@/lib/store';
 
 interface ProductInfoProps {
+    id: string;
+    slug: string;
     title: string;
     price: string;
+    asin?: string;
+    imagen?: string;
     reviewsCount?: number;
 }
 
-export default function ProductInfo({ title, price, reviewsCount = 24 }: ProductInfoProps) {
+export default function ProductInfo({ id, slug, title, price, asin, imagen = '', reviewsCount = 0 }: ProductInfoProps) {
     const [quantity, setQuantity] = useState(1);
+    const addItem = useCartStore((s) => s.addItem);
+    const openCart = useCartStore((s) => s.openCart);
 
     const decreaseQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
     const increaseQuantity = () => setQuantity(prev => prev + 1);
+
+    const handleAddToCart = () => {
+        addItem({ id, slug, titulo: title, precio: parseFloat(price), imagen, cantidad: quantity });
+        openCart();
+    };
 
     return (
         <div className="flex flex-col">
@@ -23,13 +35,21 @@ export default function ProductInfo({ title, price, reviewsCount = 24 }: Product
                 {cleanupText(title)}
             </h1>
             
+            {asin && (
+                <div className="text-sm font-medium text-stone-400 mb-4 tracking-wide uppercase">
+                    SKU: <span className="text-stone-600">{asin}</span>
+                </div>
+            )}
+            
             <div className="flex items-center gap-2 mb-4">
                 <div className="flex text-yellow-500">
                     {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={16} fill="currentColor" strokeWidth={1} />
+                        <Star key={i} size={16} fill={reviewsCount > 0 ? "currentColor" : "none"} strokeWidth={1} />
                     ))}
                 </div>
-                <span className="text-sm text-stone-500 font-medium">({reviewsCount} reseñas verificadas)</span>
+                <span className="text-sm text-stone-500 font-medium">
+                    {reviewsCount > 0 ? `(${reviewsCount} reseñas verificadas)` : '(Sin reseñas aún)'}
+                </span>
             </div>
 
             <div className="flex items-baseline gap-2 mb-8 bg-stone-50/50 p-4 rounded-lg border border-stone-100 w-fit">
@@ -62,7 +82,10 @@ export default function ProductInfo({ title, price, reviewsCount = 24 }: Product
                 </div>
 
                 {/* Add to Cart Button */}
-                <button className="flex-1 bg-[#003f87] text-white font-bold rounded-lg h-12 hover:bg-[#002b5c] transition-all shadow-md flex items-center justify-center gap-2 text-lg">
+                <button
+                    onClick={handleAddToCart}
+                    className="flex-1 bg-[#003f87] text-white font-bold rounded-lg h-12 hover:bg-[#002b5c] transition-all shadow-md flex items-center justify-center gap-2 text-lg"
+                >
                     <ShoppingCart size={20} fill="currentColor" />
                     Agregar al Carrito
                 </button>

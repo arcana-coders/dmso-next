@@ -44,7 +44,7 @@ const DEFAULT_REVIEWS = [
 ];
 
 export default function ProductReviews({ reviews }: ProductReviewsProps) {
-    const displayReviews = (reviews && reviews.length > 0) ? reviews : DEFAULT_REVIEWS;
+    const displayReviews = (reviews && reviews.length > 0) ? reviews : [];
 
     return (
         <section className="mt-16 pt-16 border-t border-stone-200">
@@ -52,13 +52,19 @@ export default function ProductReviews({ reviews }: ProductReviewsProps) {
                 <div>
                     <h2 className="text-2xl font-semibold text-dmso-dark mb-2">Reseñas de Clientes</h2>
                     <div className="flex items-center gap-3">
-                        <div className="flex text-yellow-500">
-                            {[...Array(5)].map((_, i) => (
-                                <Star key={i} size={18} fill="currentColor" strokeWidth={1} />
-                            ))}
-                        </div>
-                        <span className="text-lg font-medium text-stone-800">4.9 de 5</span>
-                        <span className="text-sm text-stone-500 font-normal">Basado en {displayReviews.length} reseñas verificadas</span>
+                        {displayReviews.length > 0 ? (
+                            <>
+                                <div className="flex text-yellow-500">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star key={i} size={18} fill="currentColor" strokeWidth={1} />
+                                    ))}
+                                </div>
+                                <span className="text-lg font-medium text-stone-800">5.0 de 5</span>
+                                <span className="text-sm text-stone-500 font-normal">Basado en {displayReviews.length} reseñas verificadas</span>
+                            </>
+                        ) : (
+                            <span className="text-stone-500 italic">Aún no hay reseñas para este producto.</span>
+                        )}
                     </div>
                 </div>
                 <button className="bg-white border border-dmso-dark text-dmso-dark px-6 py-2 rounded font-medium hover:bg-dmso-dark hover:text-white transition-all duration-300">
@@ -66,23 +72,29 @@ export default function ProductReviews({ reviews }: ProductReviewsProps) {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {displayReviews.slice(0, 6).map((review, idx) => (
-                    <div key={review.id || idx} className="bg-white p-6 rounded-xl border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex text-yellow-500 mb-3">
-                            {[...Array(review.rating || 5)].map((_, i) => (
-                                <Star key={i} size={14} fill="currentColor" strokeWidth={1} />
-                            ))}
+            {displayReviews.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {displayReviews.slice(0, 6).map((review, idx) => (
+                        <div key={review.id || idx} className="bg-white p-6 rounded-xl border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
+                            <div className="flex text-yellow-500 mb-3">
+                                {[...Array(review.rating || 5)].map((_, i) => (
+                                    <Star key={i} size={14} fill="currentColor" strokeWidth={1} />
+                                ))}
+                            </div>
+                            <h4 className="font-semibold text-dmso-dark mb-1">{cleanupText(review.titulo)}</h4>
+                            <p className="text-sm text-stone-600 mb-4 line-clamp-3">"{cleanupText(review.texto)}"</p>
+                            <div className="flex justify-between items-center pt-4 border-t border-stone-50">
+                                <span className="text-sm font-medium text-stone-800">{review.autor || 'Usuario Verificado'}</span>
+                                <span className="text-xs text-stone-400">{review.fecha || 'Reciente'}</span>
+                            </div>
                         </div>
-                        <h4 className="font-semibold text-dmso-dark mb-1">{cleanupText(review.titulo)}</h4>
-                        <p className="text-sm text-stone-600 mb-4 line-clamp-3">"{cleanupText(review.texto)}"</p>
-                        <div className="flex justify-between items-center pt-4 border-t border-stone-50">
-                            <span className="text-sm font-medium text-stone-800">{review.autor || 'Usuario Verificado'}</span>
-                            <span className="text-xs text-stone-400">{review.fecha || 'Reciente'}</span>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="bg-stone-50 p-12 rounded-2xl border border-dashed border-stone-200 text-center">
+                    <p className="text-stone-500">Sé el primero en compartir tu experiencia con este producto.</p>
+                </div>
+            )}
         </section>
     );
 }
