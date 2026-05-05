@@ -42,7 +42,7 @@ export default async function RootLayout({
     '@type': 'Organization',
     name: 'DMSO México',
     url: 'https://www.dmso.com.mx',
-    logo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAl0KZyR0RhloHByZ2OH1wdfcqy6d_IuPOSsIW8rnc58q7uoSa9MCchWriLilKVqq89eu9osJNU1bs-sVCb1ZMtvfDhRp7WcpWU7wSTjRfCGpt63tfKQ4Ue9C5BFEw7msqOsYvKkFAybzclszwyPWZGWUjlrW6ScbtMU4sWPubRG0vJZz2lHpoW5GkFhq8jA0cJYgztLAuVTglx7t4AWSH7TgykewNUHEv9xEpfVoH0aMNx6mnP2o4A6JZtC85gt7LASnVxFRp4fklK',
+    logo: 'https://www.dmso.com.mx/images/ui/logo-dmso.png',
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: '+52-777-408-7291',

@@ -21,7 +21,7 @@ export default function AboutPage() {
           </div>
           <div className="relative h-[500px] w-full rounded-xl overflow-hidden border border-[#c2c6d4] shadow-sm">
             <Image 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuB97EIZkDuRi9YLxq1J6iek0mESvsKlhwfgmH7gcV13FVsfstseK-wsePx9VBdNIo4zHj4DgOgRxA0HmBsh-dznU2fFQwwpvw1JUaNqAtlfMSMyU_iC1nZWyn9UaNu-nRN9Gh-7XuA4cVP_LT0qPGbUBj0TYaDTqNEip94ltqWOlnVixkYXXy-AqBzCbzEZUz2YXUl5KI5zzFVnHPXkhk2brkjP1uLrTxqHRHSd-VRVgPdWeXjqVu5YzTbqD9fgoBKqU6T5yrmJjWw"
+              src="/images/ui/about-lab.png"
               alt="Laboratorio clínico moderno"
               fill
               className="object-cover"

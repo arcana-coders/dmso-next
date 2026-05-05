@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'DMSO México - Pureza que Transforma',
     description: 'El estándar de oro en DMSO para uso humano y laboratorio. Envíos seguros y rápidos.',
-    images: ['/images/ui/hero-dmso.webp'],
+    images: ['/images/ui/hero-dmso.png'],
   }
 };
 

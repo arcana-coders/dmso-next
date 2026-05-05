@@ -73,7 +73,7 @@ export default function Hero() {
                         <img 
                             alt="DMSO Pharmaceutical Grade Product Lineup" 
                             className="relative z-10 w-full h-auto rounded-2xl clinical-shadow border border-white/20 object-cover aspect-square md:aspect-[4/3] bg-white" 
-                            src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                            src="/images/ui/hero-dmso.png" 
                         />
                     </div>
                     
