@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.dmso.com.mx'),
   title: { default: 'DMSO México - Solución de Bienestar', template: '%s | DMSO México' },
   description: "DMSO Puro en México con envío gratis a todo el país. Grado farmacéutico 99.9%.",
-  openGraph: { type: 'website', locale: 'es_MX', siteName: 'DMSO México' },
+  openGraph: { type: 'website', locale: 'es_MX', siteName: 'DMSO México', url: 'https://www.dmso.com.mx' },
   robots: { index: true, follow: true },
   icons: {
     icon: '/icon.svg',

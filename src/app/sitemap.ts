@@ -3,6 +3,8 @@ import { db } from '@/lib/db';
 import { productos, categorias } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic'
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.dmso.com.mx';
 
