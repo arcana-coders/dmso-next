@@ -14,9 +14,39 @@ interface ClienteData {
   cp: string;
 }
 
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
+const BASE_URL = process.env.PAYPAL_API_URL || (
+  process.env.NODE_ENV === 'production'
+    ? 'https://api-m.paypal.com'
+    : 'https://api-m.sandbox.paypal.com'
+);
+
+export async function getPayPalAccessToken() {
+  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+    throw new Error('Faltan credenciales de PayPal');
+  }
+
+  const response = await fetch(`${BASE_URL}/v1/oauth2/token`, {
+    method: 'POST',
+    body: 'grant_type=client_credentials',
+    headers: {
+      Authorization: `Basic ${Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString('base64')}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    cache: 'no-store',
+  });
+
+  const data = await response.json();
+  if (!response.ok || !data.access_token) {
+    throw new Error(data.error_description || data.error || 'Error obteniendo token de PayPal');
+  }
+
+  return data.access_token;
+}
+
 export async function createPayPalOrder(items: any[], subtotal: number, clienteData?: ClienteData) {
-  // TODO: Validate subtotal against DB prices using lib/db.ts
-  // For now, using the provided subtotal
+  const accessToken = await getPayPalAccessToken();
 
   const body: any = {
     intent: 'CAPTURE',
@@ -51,13 +81,11 @@ export async function createPayPalOrder(items: any[], subtotal: number, clienteD
   }
 
   try {
-    const response = await fetch(`${process.env.PAYPAL_API_URL || 'https://api-m.sandbox.paypal.com'}/v2/checkout/orders`, {
+    const response = await fetch(`${BASE_URL}/v2/checkout/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Basic ${Buffer.from(
-          `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`
-        ).toString('base64')}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(body),
     });
@@ -72,4 +100,23 @@ export async function createPayPalOrder(items: any[], subtotal: number, clienteD
     console.error('PayPal Create Order Error:', error);
     throw error;
   }
+}
+
+export async function capturePayPalOrder(orderId: string) {
+  const accessToken = await getPayPalAccessToken();
+
+  const response = await fetch(`${BASE_URL}/v2/checkout/orders/${orderId}/capture`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || data.error_description || 'Error al capturar la orden en PayPal');
+  }
+
+  return data;
 }

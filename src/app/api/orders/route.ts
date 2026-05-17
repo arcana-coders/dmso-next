@@ -2,30 +2,62 @@ import { NextResponse } from 'next/server';
 import { createPayPalOrder } from '@/lib/paypal';
 import { db } from '@/lib/db';
 import { productos } from '@/lib/schema';
-import { inArray } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
+
+type CartItem = {
+  id?: string | number;
+  cantidad?: number;
+};
+
+function normalizeCart(items: CartItem[]) {
+  const quantities = new Map<number, number>();
+
+  for (const item of items) {
+    const id = Number(item.id);
+    if (!Number.isInteger(id) || id < 1) {
+      throw new Error('Producto inválido en carrito');
+    }
+
+    const quantity = Number(item.cantidad);
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+      throw new Error('Cantidad inválida en carrito');
+    }
+
+    quantities.set(id, (quantities.get(id) ?? 0) + quantity);
+  }
+
+  return quantities;
+}
 
 export async function POST(request: Request) {
   try {
     const { items, clienteData } = await request.json();
 
-    if (!items || items.length === 0) {
+    if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: 'Carrito vacío' }, { status: 400 });
     }
 
-    // SEGURIDAD: Validar precios desde la base de datos
-    const ids = items.map((i: any) => parseInt(i.id));
+    const quantities = normalizeCart(items);
+    const ids = Array.from(quantities.keys());
     const dbProducts = await db
       .select({ id: productos.id, precio: productos.precio })
       .from(productos)
-      .where(inArray(productos.id, ids));
+      .where(and(inArray(productos.id, ids), eq(productos.activo, true)));
+
+    if (dbProducts.length !== ids.length) {
+      return NextResponse.json({ error: 'Producto no disponible' }, { status: 400 });
+    }
 
     let subtotal = 0;
-    items.forEach((cartItem: any) => {
-      const dbProduct = dbProducts.find((p) => p.id === parseInt(cartItem.id));
-      if (dbProduct) subtotal += Number(dbProduct.precio) * cartItem.cantidad;
-    });
+    for (const dbProduct of dbProducts) {
+      subtotal += Number(dbProduct.precio) * (quantities.get(dbProduct.id) ?? 0);
+    }
 
-    const order = await createPayPalOrder(items, subtotal, clienteData);
+    if (subtotal <= 0) {
+      return NextResponse.json({ error: 'Total inválido' }, { status: 400 });
+    }
+
+    const order = await createPayPalOrder([], subtotal, clienteData);
     return NextResponse.json(order);
   } catch (error: any) {
     console.error('API Orders POST error:', error);

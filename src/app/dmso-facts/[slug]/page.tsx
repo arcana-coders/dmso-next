@@ -9,20 +9,61 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 function SimpleMarkdown({ content }: { content: string }) {
     const lines = content.split('\n');
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             {lines.map((line, i) => {
-                if (line.startsWith('## ')) {
-                    return <h2 key={i} className="text-2xl font-bold text-dmso-green mt-8 mb-4">{line.replace('## ', '')}</h2>;
+                const trimmed = line.trim();
+                if (trimmed === '') return <div key={i} className="h-2" />;
+                
+                // Headers
+                if (trimmed.startsWith('## ')) {
+                    return <h2 key={i} className="text-2xl md:text-3xl font-black text-primary mt-10 mb-6 tracking-tight">{trimmed.replace('## ', '')}</h2>;
                 }
-                if (line.startsWith('- ')) {
-                    const parts = line.replace('- ', '').split('**:');
-                    if (parts.length > 1) {
-                        return <li key={i} className="list-disc ml-5 mb-2"><strong className="text-dmso-dark">{parts[0].replace('**', '')}:</strong>{parts[1]}</li>
+                
+                // Lists
+                if (trimmed.startsWith('- ')) {
+                    const text = trimmed.replace('- ', '');
+                    const boldMatch = text.match(/^\*\*(.*?)\*\*(.*)/);
+                    if (boldMatch) {
+                        return (
+                            <li key={i} className="list-none flex gap-3 ml-2 mb-3">
+                                <div className="min-w-[6px] h-[6px] rounded-full bg-primary mt-2.5" />
+                                <span className="text-on-surface-variant leading-relaxed">
+                                    <strong className="text-on-surface font-bold">{boldMatch[1]}</strong>{boldMatch[2]}
+                                </span>
+                            </li>
+                        );
                     }
-                    return <li key={i} className="list-disc ml-5 mb-2">{line.replace('- ', '')}</li>;
+                    return (
+                        <li key={i} className="list-none flex gap-3 ml-2 mb-3">
+                            <div className="min-w-[6px] h-[6px] rounded-full bg-primary mt-2.5" />
+                            <span className="text-on-surface-variant leading-relaxed">{text}</span>
+                        </li>
+                    );
                 }
-                if (line.trim() === '') return null;
-                return <p key={i} className="text-stone-700 leading-relaxed text-lg">{line}</p>;
+
+                // Numbered lists
+                const numMatch = trimmed.match(/^(\d+)\.\s(.*)/);
+                if (numMatch) {
+                    return (
+                        <div key={i} className="flex gap-4 ml-2 mb-4">
+                            <span className="text-primary font-black text-lg">{numMatch[1]}.</span>
+                            <span className="text-on-surface-variant leading-relaxed">{numMatch[2]}</span>
+                        </div>
+                    );
+                }
+
+                // Paragraphs with inline bold
+                const parts = trimmed.split(/(\*\*.*?\*\*)/g);
+                return (
+                    <p key={i} className="text-on-surface-variant leading-relaxed text-lg font-body-sm">
+                        {parts.map((part, pi) => {
+                            if (part.startsWith('**') && part.endsWith('**')) {
+                                return <strong key={pi} className="text-on-surface font-bold">{part.slice(2, -2)}</strong>;
+                            }
+                            return part;
+                        })}
+                    </p>
+                );
             })}
         </div>
     );

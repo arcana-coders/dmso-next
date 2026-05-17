@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search, X } from 'lucide-react';
 
@@ -10,6 +11,7 @@ interface Product {
     slug: string;
     precio: string;
     imagenes: string[];
+    asin?: string | null;
     categoria?: { nombre: string; slug: string } | null;
 }
 
@@ -18,6 +20,7 @@ interface SearchModalProps {
 }
 
 export default function SearchModal({ products }: SearchModalProps) {
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<Product[]>([]);
@@ -59,11 +62,16 @@ export default function SearchModal({ products }: SearchModalProps) {
         }
 
         const normalizedQuery = searchQuery.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        
-        const filtered = products.filter(p => {
-            const normalizedTitle = p.titulo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            return normalizedTitle.includes(normalizedQuery);
-        }).slice(0, 8); // Limit results
+
+        const filtered = (products || []).filter(p => {
+            const title = (p.titulo || '').toLowerCase();
+            const asin = (p.asin || '').toLowerCase();
+            const normalizedTitle = title.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+            return title.includes(normalizedQuery) ||
+                   normalizedTitle.includes(normalizedQuery) ||
+                   asin.includes(normalizedQuery);
+        }).slice(0, 8);
 
         setResults(filtered);
     }, [products]);
@@ -105,12 +113,21 @@ export default function SearchModal({ products }: SearchModalProps) {
                     <div
                         ref={modalRef}
                         className="relative w-full max-w-2xl bg-surface rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 duration-200"
-                        style={{ 
+                        style={{
                             animation: 'searchModalIn 0.2s ease-out',
                         }}
                     >
                         {/* Search Input */}
-                        <div className="flex items-center gap-3 px-6 py-4 border-b border-outline-variant">
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                if (query.trim()) {
+                                    setIsOpen(false);
+                                    router.push(`/buscar?q=${encodeURIComponent(query.trim())}`);
+                                }
+                            }}
+                            className="flex items-center gap-3 px-6 py-4 border-b border-outline-variant"
+                        >
                             <Search className="w-5 h-5 text-on-surface-variant flex-shrink-0" />
                             <input
                                 ref={inputRef}
@@ -124,6 +141,7 @@ export default function SearchModal({ products }: SearchModalProps) {
                             <div className="flex items-center gap-2">
                                 {query && (
                                     <button
+                                        type="button"
                                         onClick={() => setQuery('')}
                                         className="text-on-surface-variant hover:text-on-surface p-1 rounded-md"
                                     >
@@ -131,10 +149,10 @@ export default function SearchModal({ products }: SearchModalProps) {
                                     </button>
                                 )}
                                 <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-on-surface-variant bg-surface-container rounded-md border border-outline-variant">
-                                    ESC
+                                    ENTER
                                 </kbd>
                             </div>
-                        </div>
+                        </form>
 
                         {/* Results */}
                         <div className="max-h-[60vh] overflow-y-auto">

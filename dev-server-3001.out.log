@@ -1,0 +1,11 @@
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://127.0.0.1:3001
+- Network:       http://127.0.0.1:3001
+- Environments: .env
+
+✓ Starting...
+Creating turbopack project { dir: 'D:\\proyectos-web\\dmso2\\dmso-next', testMode: true }
+✓ Ready in 2s
+ GET /shop 200 in 3.6s (compile: 1410ms, render: 2.2s)
+ GET /shop 200 in 1357ms (compile: 5ms, render: 1351ms)
+ GET /producto/producto-prueba-pago-test 200 in 2.0s (compile: 801ms, render: 1208ms)

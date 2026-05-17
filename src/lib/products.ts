@@ -7,8 +7,21 @@ export async function getProducts() {
     const allProducts = await db.query.productos.findMany({
       where: eq(productos.activo, true),
       orderBy: [desc(productos.id)],
+      columns: {
+        id: true,
+        titulo: true,
+        slug: true,
+        precio: true,
+        imagenes: true,
+        asin: true,
+      },
       with: {
-        categoria: true
+        categoria: {
+          columns: {
+            nombre: true,
+            slug: true,
+          }
+        }
       }
     });
     return allProducts;
@@ -52,7 +65,12 @@ export async function getMenuCategories() {
   try {
     const activeCats = await db.query.categorias.findMany({
       where: eq(categorias.activa, true),
-      orderBy: [desc(categorias.orden)]
+      orderBy: [desc(categorias.orden)],
+      columns: {
+        id: true,
+        nombre: true,
+        slug: true,
+      }
     });
     return activeCats;
   } catch (error) {

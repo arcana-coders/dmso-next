@@ -57,50 +57,50 @@ export default function ProductInfo({ id, slug, title, price, asin, imagen = '',
                 <span className="text-sm font-bold text-stone-400">MXN</span>
             </div>
 
-            <div className="mb-2 text-sm font-medium text-stone-700">Cantidad</div>
+            <div className="mb-2 text-sm font-black text-primary uppercase tracking-widest">Cantidad</div>
             <div className="flex gap-4 mb-6">
                 {/* Quantity Selector */}
-                <div className="flex items-center border border-gray-300 rounded overflow-hidden h-12 w-32 bg-white">
+                <div className="flex items-center border border-outline-variant rounded-xl overflow-hidden h-14 w-32 bg-white shadow-sm">
                     <button
                         onClick={decreaseQuantity}
-                        className="px-3 py-2 hover:bg-stone-100 text-stone-600 focus:outline-none w-full h-full flex items-center justify-center transition-colors"
+                        className="px-4 py-2 hover:bg-stone-100 text-primary focus:outline-none w-full h-full flex items-center justify-center transition-all active:scale-90"
                     >
-                        <Minus size={16} />
+                        <Minus size={18} strokeWidth={3} />
                     </button>
                     <input
-                        className="w-full text-center border-none focus:ring-0 p-0 text-stone-800 font-medium h-full bg-transparent outline-none"
+                        className="w-full text-center border-none focus:ring-0 p-0 text-primary font-black text-lg h-full bg-transparent outline-none"
                         type="text"
                         value={quantity}
                         readOnly
                     />
                     <button
                         onClick={increaseQuantity}
-                        className="px-3 py-2 hover:bg-stone-100 text-stone-600 focus:outline-none w-full h-full flex items-center justify-center transition-colors"
+                        className="px-4 py-2 hover:bg-stone-100 text-primary focus:outline-none w-full h-full flex items-center justify-center transition-all active:scale-90"
                     >
-                        <Plus size={16} />
+                        <Plus size={18} strokeWidth={3} />
                     </button>
                 </div>
 
                 {/* Add to Cart Button */}
                 <button
                     onClick={handleAddToCart}
-                    className="flex-1 bg-[#003f87] text-white font-bold rounded-lg h-12 hover:bg-[#002b5c] transition-all shadow-md flex items-center justify-center gap-2 text-lg"
+                    className="flex-1 bg-primary text-white font-black rounded-xl h-14 hover:brightness-110 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-3 text-lg uppercase tracking-widest active:scale-95"
                 >
-                    <ShoppingCart size={20} fill="currentColor" />
+                    <ShoppingCart size={22} strokeWidth={2.5} />
                     Agregar al Carrito
                 </button>
             </div>
 
             {/* Shipping Info Box */}
-            <div className="rounded-lg p-5 mb-8 flex items-start gap-4 bg-[#F2EFE5] border border-[#E5E0D6] text-[#1A2E25]">
-                <div className="mt-1">
-                    <svg className="w-6 h-6 text-stone-700" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+            <div className="rounded-2xl p-5 mb-8 flex items-center gap-5 bg-primary/5 border border-primary/10 text-primary">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"></path>
                     </svg>
                 </div>
                 <div>
-                    <h4 className="font-semibold text-dmso-dark">Envío gratis a todo México</h4>
-                    <p className="text-sm text-stone-600 mt-0.5">Entrega estimada: 7 - 10 días hábiles</p>
+                    <h4 className="font-black text-primary uppercase tracking-wider text-sm">Envío gratis a todo México</h4>
+                    <p className="text-xs text-primary/70 font-bold mt-0.5 uppercase tracking-tighter">Entrega estimada: 7 - 10 días hábiles</p>
                 </div>
             </div>
 

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
@@ -55,7 +56,7 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
         <script
@@ -63,7 +64,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${plusJakartaSans.variable} ${playfairDisplay.variable} bg-background text-on-background font-body-md antialiased`}>
+      <body suppressHydrationWarning className={`${plusJakartaSans.variable} ${playfairDisplay.variable} bg-background text-on-background font-body-md antialiased`}>
         <Navbar categories={categories} products={allProducts} />
         {children}
         <Footer />

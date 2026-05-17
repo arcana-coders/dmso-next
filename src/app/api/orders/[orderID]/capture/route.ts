@@ -1,6 +1,78 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { ordenes } from '@/lib/schema';
+import { ordenes, productos } from '@/lib/schema';
+import { capturePayPalOrder } from '@/lib/paypal';
+import { sendOrderConfirmationEmail } from '@/lib/resend-utils';
+import { and, eq, inArray } from 'drizzle-orm';
+
+type CartItem = {
+  id?: string | number;
+  cantidad?: number;
+};
+
+function normalizeCart(items: CartItem[]) {
+  const quantities = new Map<number, number>();
+
+  for (const item of items) {
+    const id = Number(item.id);
+    if (!Number.isInteger(id) || id < 1) {
+      throw new Error('Producto inválido en carrito');
+    }
+
+    const quantity = Number(item.cantidad);
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+      throw new Error('Cantidad inválida en carrito');
+    }
+
+    quantities.set(id, (quantities.get(id) ?? 0) + quantity);
+  }
+
+  return quantities;
+}
+
+async function buildSecureOrderItems(items: CartItem[]) {
+  const quantities = normalizeCart(items);
+  const ids = Array.from(quantities.keys());
+  const dbProducts = await db
+    .select({
+      id: productos.id,
+      asin: productos.asin,
+      titulo: productos.titulo,
+      precio: productos.precio,
+      imagenes: productos.imagenes,
+    })
+    .from(productos)
+    .where(and(inArray(productos.id, ids), eq(productos.activo, true)));
+
+  if (dbProducts.length !== ids.length) {
+    throw new Error('Producto no disponible');
+  }
+
+  const secureItems = dbProducts.map((product) => {
+    const quantity = quantities.get(product.id) ?? 0;
+    const images = Array.isArray(product.imagenes) ? product.imagenes : [];
+
+    return {
+      productoId: product.id,
+      asin: product.asin,
+      titulo: product.titulo,
+      precio: Number(product.precio),
+      cantidad: quantity,
+      imagen: images[0] ?? null,
+    };
+  });
+
+  const total = secureItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+  if (total <= 0) {
+    throw new Error('Total inválido');
+  }
+
+  return { secureItems, total };
+}
+
+function getCapturedAmount(captureData: any) {
+  return Number(captureData.purchase_units?.[0]?.payments?.captures?.[0]?.amount?.value ?? NaN);
+}
 
 export async function POST(
   request: Request,
@@ -8,26 +80,15 @@ export async function POST(
 ) {
   try {
     const { orderID } = await params;
-    const { clienteData, items, total } = await request.json();
+    const { clienteData, items } = await request.json();
 
-    const response = await fetch(
-      `${process.env.PAYPAL_API_URL || 'https://api-m.sandbox.paypal.com'}/v2/checkout/orders/${orderID}/capture`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${Buffer.from(
-            `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`
-          ).toString('base64')}`,
-        },
-      }
-    );
-
-    const captureData = await response.json();
-
-    if (!response.ok) {
-      throw new Error(captureData.message || 'Error al capturar la orden en PayPal');
+    if (!Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: 'Carrito vacío' }, { status: 400 });
     }
+
+    const { secureItems, total } = await buildSecureOrderItems(items);
+
+    const captureData = await capturePayPalOrder(orderID);
 
     if (captureData.status !== 'COMPLETED') {
       return NextResponse.json({ error: 'Pago no completado', detail: captureData }, { status: 400 });
@@ -36,6 +97,12 @@ export async function POST(
     // Guardar orden confirmada en BD
     const ordenId = `DMSO-${Date.now()}`;
     const captureId = captureData.purchase_units?.[0]?.payments?.captures?.[0]?.id ?? orderID;
+    const capturedAmount = getCapturedAmount(captureData);
+
+    if (!Number.isFinite(capturedAmount) || Math.abs(capturedAmount - total) > 0.01) {
+      console.error('Monto PayPal no coincide con total servidor', { orderID, capturedAmount, total });
+      return NextResponse.json({ error: 'Monto de pago inválido' }, { status: 409 });
+    }
 
     await db.insert(ordenes).values({
       id: ordenId,
@@ -54,40 +121,19 @@ export async function POST(
         estado: clienteData?.estado ?? '',
         cp: clienteData?.cp ?? '',
       },
-      items: items ?? [],
+      items: secureItems,
     });
 
-    // Email de confirmación — no bloqueante
-    if (process.env.RESEND_API_KEY) {
-      try {
-        await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: 'DMSO México <pedidos@dmso.com.mx>',
-            to: [clienteData?.email],
-            subject: `✅ Pedido confirmado — ${ordenId}`,
-            html: `
-              <div style="font-family:sans-serif;max-width:520px;margin:auto">
-                <h2 style="color:#006c4a">¡Tu pedido está confirmado!</h2>
-                <p>Hola <strong>${clienteData?.nombre}</strong>, recibimos tu pago correctamente.</p>
-                <p><strong>Número de pedido:</strong> ${ordenId}</p>
-                <p><strong>Total:</strong> $${Number(total).toFixed(2)} MXN</p>
-                <p>Tiempo de entrega estimado: <strong>7–10 días hábiles</strong>.</p>
-                <p>Cualquier duda escríbenos a <a href="mailto:soporte@dmso.com.mx">soporte@dmso.com.mx</a></p>
-                <p style="color:#666;font-size:13px;margin-top:32px">DMSO México · dmso.com.mx</p>
-              </div>
-            `,
-          }),
-        });
-      } catch (emailErr) {
-        console.error('Error enviando email de confirmación:', emailErr);
-      }
-    } else {
-      console.warn(`[DMSO] Orden ${ordenId} completada — RESEND_API_KEY no configurado.`);
+    try {
+      await sendOrderConfirmationEmail({
+        email: clienteData?.email,
+        orderId: ordenId,
+        customerName: [clienteData?.nombre, clienteData?.apellidos].filter(Boolean).join(' '),
+        total: Number(total ?? 0),
+        items: secureItems,
+      });
+    } catch (emailErr) {
+      console.error('Error enviando emails de confirmación:', emailErr);
     }
 
     return NextResponse.json({ ...captureData, numeroOrden: ordenId });
