@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useCartStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
 import {
@@ -16,12 +16,12 @@ import Link from 'next/link';
 
 // Debe ser componente separado porque usePayPalCardFields() solo funciona
 // dentro del árbol de PayPalCardFieldsProvider.
-function CardSubmitButton({ formValid }: { formValid: boolean }) {
+function CardSubmitButton({ formValid, isProcessing }: { formValid: boolean; isProcessing: boolean }) {
   const { cardFieldsForm } = usePayPalCardFields();
 
   return (
     <button
-      disabled={!formValid}
+      disabled={!formValid || isProcessing}
       onClick={async () => {
         if (!cardFieldsForm) return;
         try {
@@ -32,7 +32,7 @@ function CardSubmitButton({ formValid }: { formValid: boolean }) {
       }}
       className="w-full bg-[#191c1e] text-white py-4 rounded-lg font-bold text-base tracking-wide hover:bg-[#2d3133] transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed mt-2"
     >
-      Pagar con Tarjeta
+      {isProcessing ? 'Procesando...' : 'Pagar con Tarjeta'}
     </button>
   );
 }
@@ -104,6 +104,8 @@ export default function CheckoutClient() {
   const [mounted, setMounted] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderError, setOrderError] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const paymentInFlightRef = useRef(false);
   const total = getTotal();
 
   const [formData, setFormData] = useState({
@@ -130,18 +132,30 @@ export default function CheckoutClient() {
   };
 
   const createOrder = async () => {
+    if (paymentInFlightRef.current) {
+      throw new Error('Ya estamos procesando tu pago.');
+    }
+
+    paymentInFlightRef.current = true;
+    setIsProcessing(true);
     setOrderError('');
-    const response = await fetch('/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items, clienteData: formData }),
-    });
-    const orderData = await response.json();
-    if (orderData.id) return orderData.id;
-    const errorDetail = orderData?.details?.[0];
-    throw new Error(
-      errorDetail ? `${errorDetail.issue} ${errorDetail.description}` : JSON.stringify(orderData)
-    );
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, clienteData: formData }),
+      });
+      const orderData = await response.json();
+      if (orderData.id) return orderData.id;
+      const errorDetail = orderData?.details?.[0];
+      throw new Error(
+        errorDetail ? `${errorDetail.issue} ${errorDetail.description}` : JSON.stringify(orderData)
+      );
+    } catch (error) {
+      paymentInFlightRef.current = false;
+      setIsProcessing(false);
+      throw error;
+    }
   };
 
   const onApprove = async (data: any) => {
@@ -165,6 +179,8 @@ export default function CheckoutClient() {
     } catch (error: any) {
       console.error('Error en onApprove:', error);
       setOrderError(error.message);
+      paymentInFlightRef.current = false;
+      setIsProcessing(false);
     }
   };
 
@@ -333,11 +349,16 @@ export default function CheckoutClient() {
           <PayPalScriptProvider options={initialOptions}>
             {/* Botón PayPal Wallet */}
             <PayPalButtons
+              disabled={isProcessing}
               fundingSource="paypal"
               style={{ layout: 'horizontal', shape: 'rect', height: 48 }}
               createOrder={createOrder}
               onApprove={onApprove}
-              onError={() => setOrderError('Error al procesar el pago con PayPal. Intenta de nuevo.')}
+              onError={() => {
+                paymentInFlightRef.current = false;
+                setIsProcessing(false);
+                setOrderError('Error al procesar el pago con PayPal. Intenta de nuevo.');
+              }}
             />
 
             {/* Divisor */}
@@ -351,7 +372,11 @@ export default function CheckoutClient() {
             <PayPalCardFieldsProvider
               createOrder={createOrder}
               onApprove={onApprove}
-              onError={() => setOrderError('Error al procesar el pago con tarjeta. Verifica tus datos e intenta de nuevo.')}
+              onError={() => {
+                paymentInFlightRef.current = false;
+                setIsProcessing(false);
+                setOrderError('Error al procesar el pago con tarjeta. Verifica tus datos e intenta de nuevo.');
+              }}
             >
               <div className="space-y-3">
                 <PayPalNumberField />
@@ -359,7 +384,7 @@ export default function CheckoutClient() {
                   <PayPalExpiryField />
                   <PayPalCVVField />
                 </div>
-                <CardSubmitButton formValid={formValid} />
+                <CardSubmitButton formValid={formValid} isProcessing={isProcessing} />
               </div>
             </PayPalCardFieldsProvider>
           </PayPalScriptProvider>

@@ -8,12 +8,14 @@ export async function sendOrderConfirmationEmail({
   customerName,
   total,
   items,
+  address,
 }: {
   email?: string;
   orderId: string;
   customerName?: string;
   total: number;
   items: any[];
+  address?: Record<string, any>;
 }) {
   if (!process.env.RESEND_API_KEY) {
     console.warn('RESEND_API_KEY no configurada — email omitido');
@@ -25,6 +27,12 @@ export async function sendOrderConfirmationEmail({
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY);
+  const itemLines = (items ?? [])
+    .map((item: any) => `- ${item.titulo} | ASIN/SKU: ${item.asin ?? 'N/A'} | Cantidad: ${item.cantidad} | Precio: $${item.precio}`)
+    .join('\n');
+  const addressText = address
+    ? [address.calle, address.numExt, address.ciudad, address.estado, address.cp].filter(Boolean).join(', ')
+    : 'Sin direccion capturada';
 
   try {
     if (email) {
@@ -67,7 +75,15 @@ export async function sendOrderConfirmationEmail({
       from: `DMSO México <${STORE_EMAIL}>`,
       to: [STORE_EMAIL],
       subject: `Nueva venta DMSO: ${orderId}`,
-      text: `Se ha recibido un nuevo pedido de ${customerName || 'cliente'} por $${total.toFixed(2)} MXN. Número de orden: ${orderId}`,
+      text: `Tienda: DMSO Mexico
+Numero de orden: ${orderId}
+Cliente: ${customerName || 'N/A'}
+Email cliente: ${email || 'N/A'}
+Direccion: ${addressText}
+Total: $${total.toFixed(2)} MXN
+
+Productos:
+${itemLines || 'Sin productos capturados'}`,
     });
 
     if (storeEmail.error) {

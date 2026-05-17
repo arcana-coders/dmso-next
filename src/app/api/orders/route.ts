@@ -40,7 +40,12 @@ export async function POST(request: Request) {
     const quantities = normalizeCart(items);
     const ids = Array.from(quantities.keys());
     const dbProducts = await db
-      .select({ id: productos.id, precio: productos.precio })
+      .select({
+        id: productos.id,
+        asin: productos.asin,
+        titulo: productos.titulo,
+        precio: productos.precio,
+      })
       .from(productos)
       .where(and(inArray(productos.id, ids), eq(productos.activo, true)));
 
@@ -48,16 +53,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Producto no disponible' }, { status: 400 });
     }
 
-    let subtotal = 0;
-    for (const dbProduct of dbProducts) {
-      subtotal += Number(dbProduct.precio) * (quantities.get(dbProduct.id) ?? 0);
-    }
+    const secureItems = dbProducts.map((product) => ({
+      productoId: product.id,
+      asin: product.asin,
+      titulo: product.titulo,
+      precio: Number(product.precio),
+      cantidad: quantities.get(product.id) ?? 0,
+    }));
+
+    const subtotal = secureItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
 
     if (subtotal <= 0) {
       return NextResponse.json({ error: 'Total inválido' }, { status: 400 });
     }
 
-    const order = await createPayPalOrder([], subtotal, clienteData);
+    const orderNumber = `DMSO-${Date.now()}`;
+    const order = await createPayPalOrder(secureItems, subtotal, clienteData, {
+      storeName: 'DMSO Mexico',
+      orderNumber,
+    });
     return NextResponse.json(order);
   } catch (error: any) {
     console.error('API Orders POST error:', error);

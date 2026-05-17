@@ -14,6 +14,18 @@ interface ClienteData {
   cp: string;
 }
 
+type PayPalItem = {
+  asin?: string | null;
+  titulo?: string | null;
+  precio: number;
+  cantidad: number;
+};
+
+type PayPalOrderMetadata = {
+  storeName: string;
+  orderNumber: string;
+};
+
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
 const BASE_URL = process.env.PAYPAL_API_URL || (
@@ -45,7 +57,46 @@ export async function getPayPalAccessToken() {
   return data.access_token;
 }
 
-export async function createPayPalOrder(items: any[], subtotal: number, clienteData?: ClienteData) {
+function buildPurchaseUnit(items: PayPalItem[], total: number, metadata?: PayPalOrderMetadata) {
+  const paypalItems = items.map((item) => ({
+    name: String(item.titulo || 'Producto').slice(0, 127),
+    sku: String(item.asin || item.titulo || 'producto').slice(0, 127),
+    quantity: String(item.cantidad),
+    unit_amount: {
+      currency_code: 'MXN',
+      value: Number(item.precio).toFixed(2),
+    },
+  }));
+
+  const itemTotal = items.reduce((sum, item) => sum + Number(item.precio) * Number(item.cantidad), 0);
+  const discount = Math.max(itemTotal - total, 0);
+  const description = `${metadata?.storeName || 'DMSO Mexico'} - ${paypalItems.map((item) => item.name).join(', ')}`;
+
+  return {
+    ...(metadata?.orderNumber && { invoice_id: metadata.orderNumber }),
+    ...(metadata?.storeName && { custom_id: `${metadata.storeName} ${metadata.orderNumber}`.slice(0, 127) }),
+    description: description.slice(0, 127),
+    amount: {
+      currency_code: 'MXN',
+      value: total.toFixed(2),
+      breakdown: {
+        item_total: {
+          currency_code: 'MXN',
+          value: itemTotal.toFixed(2),
+        },
+        ...(discount > 0 && {
+          discount: {
+            currency_code: 'MXN',
+            value: discount.toFixed(2),
+          },
+        }),
+      },
+    },
+    items: paypalItems,
+  };
+}
+
+export async function createPayPalOrder(items: PayPalItem[], subtotal: number, clienteData?: ClienteData, metadata?: PayPalOrderMetadata) {
   const accessToken = await getPayPalAccessToken();
 
   const body: any = {
@@ -54,12 +105,7 @@ export async function createPayPalOrder(items: any[], subtotal: number, clienteD
       shipping_preference: 'NO_SHIPPING', // Address is handled directly in our form/billing
     },
     purchase_units: [
-      {
-        amount: {
-          currency_code: 'MXN',
-          value: subtotal.toFixed(2),
-        },
-      },
+      buildPurchaseUnit(items, subtotal, metadata),
     ],
   };
 

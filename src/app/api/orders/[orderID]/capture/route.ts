@@ -94,8 +94,7 @@ export async function POST(
       return NextResponse.json({ error: 'Pago no completado', detail: captureData }, { status: 400 });
     }
 
-    // Guardar orden confirmada en BD
-    const ordenId = `DMSO-${Date.now()}`;
+    const ordenId = captureData.purchase_units?.[0]?.invoice_id ?? `DMSO-${Date.now()}`;
     const captureId = captureData.purchase_units?.[0]?.payments?.captures?.[0]?.id ?? orderID;
     const capturedAmount = getCapturedAmount(captureData);
 
@@ -131,6 +130,13 @@ export async function POST(
         customerName: [clienteData?.nombre, clienteData?.apellidos].filter(Boolean).join(' '),
         total: Number(total ?? 0),
         items: secureItems,
+        address: {
+          calle: clienteData?.calle,
+          numExt: clienteData?.numExt,
+          ciudad: clienteData?.ciudad,
+          estado: clienteData?.estado,
+          cp: clienteData?.cp,
+        },
       });
     } catch (emailErr) {
       console.error('Error enviando emails de confirmación:', emailErr);
