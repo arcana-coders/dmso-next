@@ -185,6 +185,7 @@ export default function CheckoutClient() {
     nombre: '',
     apellidos: '',
     email: '',
+    telefono: '',
     calle: '',
     numExt: '',
     colonia: '',
@@ -199,7 +200,7 @@ export default function CheckoutClient() {
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    const requiredFields = ['nombre', 'apellidos', 'email', 'calle', 'numExt', 'colonia', 'ciudad', 'estado', 'cp'] as const;
+    const requiredFields = ['nombre', 'apellidos', 'email', 'telefono', 'calle', 'numExt', 'colonia', 'ciudad', 'estado', 'cp'] as const;
     setFormValid(requiredFields.every((field) => formData[field].trim() !== ''));
   }, [formData]);
 
@@ -299,10 +300,13 @@ export default function CheckoutClient() {
     );
   }
 
+  const explicitPayPalEnv = process.env.NEXT_PUBLIC_PAYPAL_ENV;
   const paypalEnvironment: 'sandbox' | 'production' =
-    process.env.NEXT_PUBLIC_PAYPAL_ENV === 'sandbox' || process.env.NODE_ENV !== 'production'
-      ? 'sandbox'
-      : 'production';
+    explicitPayPalEnv === 'live'
+      ? 'production'
+      : explicitPayPalEnv === 'sandbox' || process.env.NODE_ENV !== 'production'
+        ? 'sandbox'
+        : 'production';
 
   const initialOptions = {
     clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '',
@@ -331,6 +335,19 @@ export default function CheckoutClient() {
           <div>
             <label className={LABEL_CLASS}>Correo Electrónico</label>
             <input type="email" name="email" value={formData.email} onChange={handleChange} className={INPUT_CLASS} required />
+          </div>
+          <div>
+            <label className={LABEL_CLASS}>Teléfono</label>
+            <input
+              type="tel"
+              name="telefono"
+              value={formData.telefono}
+              onChange={handleChange}
+              className={INPUT_CLASS}
+              autoComplete="tel"
+              inputMode="tel"
+              required
+            />
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div className="col-span-2">

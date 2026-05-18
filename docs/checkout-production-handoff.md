@@ -41,6 +41,8 @@ PAYPAL_CLIENT_SECRET=secret_live
 
 No hardcodear credenciales en codigo, docs o scripts.
 
+Nota 2026-05-18: DMSO Store ya tiene credenciales Live propias. No se documentan valores secretos aqui. Para produccion, Arturo debe cargar en Vercel Production el par Live de DMSO Store en `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` y `NEXT_PUBLIC_PAYPAL_CLIENT_ID`, manteniendo `PAYPAL_ENV=live` y `NEXT_PUBLIC_PAYPAL_ENV=live`.
+
 ## Pruebas antes de deploy
 
 - `npm run build`.
@@ -58,6 +60,11 @@ No hardcodear credenciales en codigo, docs o scripts.
 ## Pase a produccion 2026-05-18
 
 - Prueba sandbox confirmada por Arturo: pago sandbox completado correctamente despues de los ajustes visuales moviles.
+- Root cause de fallo rapido con tarjeta live: produccion estaba en modo live, pero el token OAuth fallaba con `Client Authentication failed` / `invalid_client`, consistente con credenciales PayPal del ambiente equivocado o no correspondientes a DMSO Store.
+- Accion definida: reemplazar en Vercel Production las credenciales PayPal por las Live propias de DMSO Store; no requiere cambio de codigo.
+- Root cause adicional local/live: el frontend forzaba `sandbox` cuando `NODE_ENV !== 'production'`, aun con `NEXT_PUBLIC_PAYPAL_ENV=live`. Resultado: cargaba `https://www.sandbox.paypal.com/sdk/js` con un Client ID Live. La regla correcta es que `NEXT_PUBLIC_PAYPAL_ENV=live` debe cargar SDK produccion incluso en `next dev`.
+- Validacion obligatoria al cambiar a Live local: verificar que el SDK cargue desde `https://www.paypal.com/sdk/js`, que OAuth live devuelva token y que `/api/orders` cree orden PayPal Live antes de intentar tarjeta.
+- Telefono del cliente queda obligatorio para operar envios. Debe viajar en `clienteData`, validarse antes de crear orden, guardarse en `ordenes.cliente.telefono` y aparecer en correo cliente/tienda.
 - `.env.local` queda en modo live para la siguiente revision local contra PayPal produccion:
   - `PAYPAL_ENV=live`
   - `NEXT_PUBLIC_PAYPAL_ENV=live`
@@ -78,6 +85,7 @@ No hardcodear credenciales en codigo, docs o scripts.
 6. Confirmar:
    - un solo cobro,
    - una sola orden,
+   - telefono guardado y visible para operar envio,
    - correo cliente sin `[SANDBOX]`,
    - correo tienda sin `[SANDBOX]`,
    - PayPal Live con tienda, orden, descripcion e items.

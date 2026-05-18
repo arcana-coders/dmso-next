@@ -43,12 +43,14 @@ function productRows(items: any[]) {
 function customerEmailHtml({
   orderId,
   customerName,
+  phone,
   total,
   items,
   addressText,
 }: {
   orderId: string;
   customerName?: string;
+  phone?: string;
   total: number;
   items: any[];
   addressText: string;
@@ -81,6 +83,7 @@ function customerEmailHtml({
               <td style="vertical-align:top;">
                 <div style="font-size:12px;color:#6b7280;font-weight:700;text-transform:uppercase;">Direccion de envio</div>
                 <div style="font-size:14px;color:#374151;line-height:1.5;margin-top:6px;">${escapeHtml(addressText)}</div>
+                <div style="font-size:14px;color:#374151;line-height:1.5;margin-top:6px;"><strong>Telefono:</strong> ${escapeHtml(phone || 'N/A')}</div>
               </td>
             </tr>
           </table>
@@ -116,6 +119,7 @@ function customerEmailHtml({
 
 export async function sendOrderConfirmationEmail({
   email,
+  phone,
   orderId,
   customerName,
   total,
@@ -123,6 +127,7 @@ export async function sendOrderConfirmationEmail({
   address,
 }: {
   email?: string;
+  phone?: string;
   orderId: string;
   customerName?: string;
   total: number;
@@ -161,11 +166,12 @@ export async function sendOrderConfirmationEmail({
         from: `DMSO México <${STORE_EMAIL}>`,
         to: [email],
         subject: `${subjectPrefix}Confirmación de Pedido #${orderId} - DMSO México`,
-        html: customerEmailHtml({ orderId, customerName, total, items, addressText }),
+        html: customerEmailHtml({ orderId, customerName, phone, total, items, addressText }),
         text: `${IS_SANDBOX ? 'MODO SANDBOX: pago de prueba, no dinero real.\n\n' : ''}Gracias por tu compra en DMSO Mexico.
 
 Numero de pedido: ${orderId}
 Cliente: ${customerName || 'N/A'}
+Telefono: ${phone || 'N/A'}
 Direccion: ${addressText}
 Total: ${formatMoney(total)}
 
@@ -210,6 +216,7 @@ Tu pedido sera procesado a la brevedad. Si tienes dudas, responde este correo.`,
                     <div style="font-size:12px;color:#6b7280;font-weight:700;text-transform:uppercase;">Cliente</div>
                     <div style="font-size:16px;color:#111827;font-weight:700;margin-top:4px;">${escapeHtml(customerName || 'N/A')}</div>
                     <div style="font-size:14px;color:#374151;margin-top:4px;">${escapeHtml(email || 'N/A')}</div>
+                    <div style="font-size:14px;color:#374151;margin-top:4px;">${escapeHtml(phone || 'N/A')}</div>
                   </td>
                   <td style="width:50%;vertical-align:top;padding:0 0 12px 8px;">
                     <div style="font-size:12px;color:#6b7280;font-weight:700;text-transform:uppercase;">Direccion</div>
@@ -243,6 +250,7 @@ Tu pedido sera procesado a la brevedad. Si tienes dudas, responde este correo.`,
 Numero de orden: ${orderId}
 Cliente: ${customerName || 'N/A'}
 Email cliente: ${email || 'N/A'}
+Telefono cliente: ${phone || 'N/A'}
 Direccion: ${addressText}
 Total: $${total.toFixed(2)} MXN
 

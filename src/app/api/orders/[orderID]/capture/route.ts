@@ -130,6 +130,7 @@ export async function POST(
         nombre: clienteData?.nombre ?? '',
         apellidos: clienteData?.apellidos ?? '',
         email: clienteData?.email ?? '',
+        telefono: clienteData?.telefono ?? '',
       },
       direccion: {
         calle: clienteData?.calle ?? '',
@@ -146,6 +147,7 @@ export async function POST(
     try {
       await sendOrderConfirmationEmail({
         email: clienteData?.email,
+        phone: clienteData?.telefono,
         orderId: ordenId,
         customerName: [clienteData?.nombre, clienteData?.apellidos].filter(Boolean).join(' '),
         total: Number(total ?? 0),

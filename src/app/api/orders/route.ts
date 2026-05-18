@@ -29,12 +29,22 @@ function normalizeCart(items: CartItem[]) {
   return quantities;
 }
 
+function getMissingCustomerFields(clienteData: any) {
+  const requiredFields = ['nombre', 'apellidos', 'email', 'telefono', 'calle', 'numExt', 'colonia', 'ciudad', 'estado', 'cp'];
+  return requiredFields.filter((field) => !String(clienteData?.[field] ?? '').trim());
+}
+
 export async function POST(request: Request) {
   try {
     const { items, clienteData } = await request.json();
 
     if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: 'Carrito vacío' }, { status: 400 });
+    }
+
+    const missingCustomerFields = getMissingCustomerFields(clienteData);
+    if (missingCustomerFields.length > 0) {
+      return NextResponse.json({ error: `Faltan datos obligatorios: ${missingCustomerFields.join(', ')}` }, { status: 400 });
     }
 
     const quantities = normalizeCart(items);
