@@ -33,12 +33,13 @@ export const useCartStore = create<CartStore>()(
         const existing = state.items.find((i) => i.id === item.id);
         if (existing) {
           return {
+            isOpen: true,
             items: state.items.map((i) =>
               i.id === item.id ? { ...i, cantidad: i.cantidad + item.cantidad } : i
             ),
           };
         }
-        return { items: [...state.items, item] };
+        return { isOpen: true, items: [...state.items, item] };
       }),
       removeItem: (id) => set((state) => ({
         items: state.items.filter((i) => i.id !== id),

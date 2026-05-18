@@ -42,6 +42,8 @@ npm run dev
 
 Abrir `http://localhost:3000/checkout` y pagar con la cuenta sandbox personal compradora desde `https://sandbox.paypal.com`.
 
+Si se abre local como `http://127.0.0.1:3000`, `next.config.ts` debe incluir `allowedDevOrigins: ['127.0.0.1']`. Sin eso, Next puede bloquear recursos de desarrollo y los botones cliente, como agregar al carrito o abrir el carrito desde el header, pueden parecer muertos.
+
 ## Direccion de entrega
 
 El checkout debe capturar direccion mexicana completa:
@@ -103,6 +105,7 @@ No hacer deploy live hasta que esta lista este completa:
 - [ ] PayPal sandbox muestra contexto operativo.
 - [ ] Badges de confianza se ven bien en celular y tablet.
 - [ ] Pagina de producto usa los mismos badges que checkout.
+- [ ] Carrito local probado en `localhost` y `127.0.0.1` si se usa esa URL.
 - [ ] Claims visuales de badges revisados antes de produccion.
 - [ ] No hay orden duplicada por doble submit.
 

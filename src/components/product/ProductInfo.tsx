@@ -19,14 +19,12 @@ interface ProductInfoProps {
 export default function ProductInfo({ id, slug, title, price, asin, imagen = '', reviewsCount = 0 }: ProductInfoProps) {
     const [quantity, setQuantity] = useState(1);
     const addItem = useCartStore((s) => s.addItem);
-    const openCart = useCartStore((s) => s.openCart);
 
     const decreaseQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
     const increaseQuantity = () => setQuantity(prev => prev + 1);
 
     const handleAddToCart = () => {
         addItem({ id, slug, titulo: title, precio: parseFloat(price), imagen, cantidad: quantity });
-        openCart();
     };
 
     return (

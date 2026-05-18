@@ -105,6 +105,7 @@ export default function Navbar({ categories = [], products = [] }: { categories?
                         <div className="flex items-center gap-2 text-primary">
                             <button
                                 onClick={openCart}
+                                aria-label="Abrir carrito"
                                 className="relative hover:bg-primary/5 p-2 rounded-full transition-all duration-200 active:scale-90 ease-in-out hidden sm:flex items-center justify-center border border-transparent hover:border-primary/10"
                             >
                                 <ShoppingCart size={22} strokeWidth={2.5} />
@@ -172,6 +173,7 @@ export default function Navbar({ categories = [], products = [] }: { categories?
                         <div className="flex gap-4 pt-4 sm:hidden justify-center">
                         <button
                             onClick={() => { setIsMenuOpen(false); openCart(); }}
+                            aria-label="Abrir carrito"
                             className="bg-white text-primary hover:bg-stone-50 p-5 rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 flex-1 font-black uppercase tracking-widest active:scale-95 shadow-xl"
                         >
                             <ShoppingCart size={24} strokeWidth={3} />

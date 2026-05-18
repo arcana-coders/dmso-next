@@ -44,6 +44,7 @@ No hardcodear credenciales en codigo, docs o scripts.
 ## Pruebas antes de deploy
 
 - `npm run build`.
+- Carrito probado en local: agregar producto debe abrir drawer con producto y el header/menu debe reabrirlo. Si se usa `127.0.0.1`, confirmar `allowedDevOrigins` en `next.config.ts`.
 - Compra sandbox wallet completada.
 - Compra sandbox tarjeta completada o Card Fields documentado como no elegible.
 - Correo cliente HTML recibido.
