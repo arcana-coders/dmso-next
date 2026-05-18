@@ -13,7 +13,8 @@ Este documento resume el cambio que se prepara para produccion y el patron que d
 - La pagina `/checkout/exitoso` renderiza el numero de orden sin depender de animaciones fragiles.
 - Correos de cliente y tienda son HTML con fallback `text`.
 - Direccion Mexico: `colonia` obligatoria y `referencias` opcional en formulario, DB, PayPal y correos.
-- Badges checkout: SVG locales PayPal/McAfee/Norton/Google, 2x2 en movil y 4 columnas desde tablet.
+- Badges de confianza: SVG locales PayPal/McAfee/Norton/Google, 2x2 en movil y 4 columnas desde tablet.
+- Checkout y pagina de producto deben usar el mismo patron visual. En este repo el componente reusable vive en `src/components/ui/PaymentSealBadges.tsx`; `src/components/product/TrustBadges.tsx` solo lo envuelve en modo compacto.
 
 ## Variables esperadas
 
@@ -51,6 +52,7 @@ No hardcodear credenciales en codigo, docs o scripts.
 - Orden sandbox distinguible.
 - Direccion completa conservada, incluyendo colonia y referencias si existen.
 - Badges revisados en celular y tablet.
+- Pagina de producto revisada con los mismos badges que checkout.
 
 ## Deploy
 

@@ -66,9 +66,11 @@ El checkout debe capturar direccion mexicana completa:
 - PayPal muestra `invoice_id`, `custom_id`, descripcion e items.
 - Doble click o reintento no genera orden duplicada.
 
-## Badges de confianza en checkout
+## Badges de confianza en checkout y producto
 
-El bloque debajo del pago debe usar badges SVG locales. No usar imagenes externas ni copiar assets remotos.
+El bloque debajo del pago y la pagina de producto deben usar los mismos badges SVG locales. No usar imagenes externas ni copiar assets remotos.
+
+Componente fuente: `src/components/ui/PaymentSealBadges.tsx`.
 
 Patron actual:
 
@@ -82,6 +84,7 @@ Responsive:
 - Celular: grid 2x2.
 - Tablet y desktop: 4 badges en una fila.
 - Usar ancho maximo para que en iPad no se inflen como carteles.
+- En pagina de producto usar variante compacta para no competir con precio y boton de carrito.
 
 Antes de produccion, revisar si estos nombres se mantienen como claims literales o si se cambian a texto propio. Si no existe certificacion activa de McAfee/Norton/Google, no se debe presentar como certificacion real en copy legal o comercial.
 
@@ -99,6 +102,7 @@ No hacer deploy live hasta que esta lista este completa:
 - [ ] Pagina de exito visible con numero de orden.
 - [ ] PayPal sandbox muestra contexto operativo.
 - [ ] Badges de confianza se ven bien en celular y tablet.
+- [ ] Pagina de producto usa los mismos badges que checkout.
 - [ ] Claims visuales de badges revisados antes de produccion.
 - [ ] No hay orden duplicada por doble submit.
 
