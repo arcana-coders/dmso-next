@@ -55,6 +55,19 @@ No hardcodear credenciales en codigo, docs o scripts.
 - Badges revisados en celular y tablet.
 - Pagina de producto revisada con los mismos badges que checkout.
 
+## Pase a produccion 2026-05-18
+
+- Prueba sandbox confirmada por Arturo: pago sandbox completado correctamente despues de los ajustes visuales moviles.
+- `.env.local` queda en modo live para la siguiente revision local contra PayPal produccion:
+  - `PAYPAL_ENV=live`
+  - `NEXT_PUBLIC_PAYPAL_ENV=live`
+- Cambios UI incluidos en este pase:
+  - CTA de catalogo movil mas visible y funcional; agrega al carrito desde `/shop` sin navegar.
+  - CTA de producto movil debajo del selector de cantidad y de ancho completo.
+  - Badges de pago contenidos en su grid, incluyendo PayPal Verified.
+- Validacion local antes de subir: `npm run build`, `/shop` HTTP 200, `/checkout` HTTP 200 y prueba Playwright movil de agregar al carrito desde catalogo.
+- Siguiente verificacion en produccion: esperar deploy de Vercel desde GitHub, abrir `/shop`, `/producto/...` y `/checkout`, y ejecutar una sola compra real pequena como smoke test.
+
 ## Deploy
 
 1. Confirmar que las variables de Vercel Production estan en modo live.

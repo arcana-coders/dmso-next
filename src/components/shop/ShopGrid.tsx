@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, type MouseEvent } from 'react';
 import Link from 'next/link';
-import { Search, X } from 'lucide-react';
+import { Search, ShoppingCart, X } from 'lucide-react';
 import { cleanupText } from '@/lib/utils';
+import { useCartStore } from '@/lib/store';
 
 interface Product {
     id: number;
@@ -21,6 +22,7 @@ interface ShopGridProps {
 export default function ShopGrid({ products }: ShopGridProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
+    const addItem = useCartStore((s) => s.addItem);
 
     // Extract unique categories from products
     const categories = useMemo(() => {
@@ -66,6 +68,22 @@ export default function ShopGrid({ products }: ShopGridProps) {
     const clearFilters = () => {
         setSearchQuery('');
         setActiveCategory(null);
+    };
+
+    const handleAddToCart = (event: MouseEvent<HTMLButtonElement>, product: Product) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const image = Array.isArray(product.imagenes) && product.imagenes.length > 0 ? (product.imagenes[0] as string) : '';
+
+        addItem({
+            id: String(product.id),
+            slug: product.slug,
+            titulo: product.titulo,
+            precio: parseFloat(product.precio),
+            imagen: image,
+            cantidad: 1,
+        });
     };
 
     const hasFilters = searchQuery || activeCategory;
@@ -182,10 +200,15 @@ export default function ShopGrid({ products }: ShopGridProps) {
                                 {product.categoria?.nombre || 'DMSO'}
                             </p>
                             
-                            <div className="flex justify-between items-center">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                 <span className="text-xl font-black text-on-surface">${product.precio}</span>
-                                <button className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-primary group-hover:text-white transition-colors duration-200" aria-label="Añadir al carrito">
-                                    <span className="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+                                <button
+                                    onClick={(event) => handleAddToCart(event, product)}
+                                    className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-black uppercase tracking-[0.08em] text-white shadow-lg shadow-primary/20 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:bg-primary/95 group-hover:shadow-primary/30 sm:h-10 sm:w-10 sm:rounded-full sm:px-0 sm:shadow-none"
+                                    aria-label="Añadir al carrito"
+                                >
+                                    <ShoppingCart size={18} strokeWidth={2.6} />
+                                    <span className="sm:hidden">Agregar al carrito</span>
                                 </button>
                             </div>
                         </Link>

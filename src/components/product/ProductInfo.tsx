@@ -56,9 +56,9 @@ export default function ProductInfo({ id, slug, title, price, asin, imagen = '',
             </div>
 
             <div className="mb-2 text-sm font-black text-primary uppercase tracking-widest">Cantidad</div>
-            <div className="flex gap-4 mb-6">
+            <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:gap-4">
                 {/* Quantity Selector */}
-                <div className="flex items-center border border-outline-variant rounded-xl overflow-hidden h-14 w-32 bg-white shadow-sm">
+                <div className="flex h-14 w-36 items-center overflow-hidden rounded-xl border border-outline-variant bg-white shadow-sm sm:w-32">
                     <button
                         onClick={decreaseQuantity}
                         className="px-4 py-2 hover:bg-stone-100 text-primary focus:outline-none w-full h-full flex items-center justify-center transition-all active:scale-90"
@@ -82,7 +82,7 @@ export default function ProductInfo({ id, slug, title, price, asin, imagen = '',
                 {/* Add to Cart Button */}
                 <button
                     onClick={handleAddToCart}
-                    className="flex-1 bg-primary text-white font-black rounded-xl h-14 hover:brightness-110 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-3 text-lg uppercase tracking-widest active:scale-95"
+                    className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-primary px-5 text-base font-black uppercase tracking-[0.12em] text-white shadow-lg shadow-primary/20 transition-all hover:brightness-110 active:scale-95 sm:flex-1 sm:text-lg sm:tracking-widest"
                 >
                     <ShoppingCart size={22} strokeWidth={2.5} />
                     Agregar al Carrito
