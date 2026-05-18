@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createPayPalOrder } from '@/lib/paypal';
+import { createPayPalOrder, getPayPalEnvironment } from '@/lib/paypal';
 import { db } from '@/lib/db';
 import { productos } from '@/lib/schema';
 import { and, eq, inArray } from 'drizzle-orm';
@@ -67,7 +67,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Total inválido' }, { status: 400 });
     }
 
-    const orderNumber = `DMSO-${Date.now()}`;
+    const orderPrefix = getPayPalEnvironment() === 'sandbox' ? 'DMSO-SBX' : 'DMSO';
+    const orderNumber = `${orderPrefix}-${Date.now()}`;
     const order = await createPayPalOrder(secureItems, subtotal, clienteData, {
       storeName: 'DMSO Mexico',
       orderNumber,

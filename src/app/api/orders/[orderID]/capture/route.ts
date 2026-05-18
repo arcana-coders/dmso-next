@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { ordenes, productos } from '@/lib/schema';
-import { capturePayPalOrder } from '@/lib/paypal';
+import { capturePayPalOrder, getPayPalEnvironment } from '@/lib/paypal';
 import { sendOrderConfirmationEmail } from '@/lib/resend-utils';
 import { and, eq, inArray } from 'drizzle-orm';
 
@@ -74,6 +74,24 @@ function getCapturedAmount(captureData: any) {
   return Number(captureData.purchase_units?.[0]?.payments?.captures?.[0]?.amount?.value ?? NaN);
 }
 
+function getOrderNumber(captureData: any) {
+  const purchaseUnit = captureData.purchase_units?.[0];
+  const invoiceId = purchaseUnit?.invoice_id;
+  const customId = purchaseUnit?.custom_id;
+
+  if (typeof invoiceId === 'string' && invoiceId.trim()) {
+    return invoiceId;
+  }
+
+  if (typeof customId === 'string') {
+    const match = customId.match(/DMSO(?:-SBX)?-\d+/);
+    if (match) return match[0];
+  }
+
+  const orderPrefix = getPayPalEnvironment() === 'sandbox' ? 'DMSO-SBX' : 'DMSO';
+  return `${orderPrefix}-${Date.now()}`;
+}
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ orderID: string }> }
@@ -94,7 +112,7 @@ export async function POST(
       return NextResponse.json({ error: 'Pago no completado', detail: captureData }, { status: 400 });
     }
 
-    const ordenId = captureData.purchase_units?.[0]?.invoice_id ?? `DMSO-${Date.now()}`;
+    const ordenId = getOrderNumber(captureData);
     const captureId = captureData.purchase_units?.[0]?.payments?.captures?.[0]?.id ?? orderID;
     const capturedAmount = getCapturedAmount(captureData);
 
@@ -116,9 +134,11 @@ export async function POST(
       direccion: {
         calle: clienteData?.calle ?? '',
         numExt: clienteData?.numExt ?? '',
+        colonia: clienteData?.colonia ?? '',
         ciudad: clienteData?.ciudad ?? '',
         estado: clienteData?.estado ?? '',
         cp: clienteData?.cp ?? '',
+        referencias: clienteData?.referencias ?? '',
       },
       items: secureItems,
     });
@@ -133,9 +153,11 @@ export async function POST(
         address: {
           calle: clienteData?.calle,
           numExt: clienteData?.numExt,
+          colonia: clienteData?.colonia,
           ciudad: clienteData?.ciudad,
           estado: clienteData?.estado,
           cp: clienteData?.cp,
+          referencias: clienteData?.referencias,
         },
       });
     } catch (emailErr) {

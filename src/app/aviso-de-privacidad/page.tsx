@@ -36,7 +36,7 @@ export default function PrivacyPage() {
         <section className="space-y-4">
           <h2 className="text-2xl font-bold text-primary tracking-tight">3. Datos Personales Recabados</h2>
           <p className="text-on-surface-variant font-body leading-relaxed">
-            Para las finalidades antes mencionadas, requerimos obtener los siguientes datos personales: nombre completo, dirección de envío, correo electrónico, teléfono y datos de facturación (RFC).
+            Para las finalidades antes mencionadas, requerimos obtener los siguientes datos personales: nombre completo, dirección de envío, colonia, referencias de entrega si usted las proporciona, correo electrónico, teléfono y datos de facturación (RFC).
           </p>
         </section>
 

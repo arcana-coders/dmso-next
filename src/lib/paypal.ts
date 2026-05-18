@@ -9,9 +9,11 @@ interface ClienteData {
   email: string;
   calle: string;
   numExt: string;
+  colonia?: string;
   ciudad: string;
   estado: string;
   cp: string;
+  referencias?: string;
 }
 
 type PayPalItem = {
@@ -28,11 +30,20 @@ type PayPalOrderMetadata = {
 
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
-const BASE_URL = process.env.PAYPAL_API_URL || (
-  process.env.NODE_ENV === 'production'
-    ? 'https://api-m.paypal.com'
-    : 'https://api-m.sandbox.paypal.com'
-);
+const EXPLICIT_PAYPAL_ENV = process.env.PAYPAL_ENV;
+const PAYPAL_ENV = EXPLICIT_PAYPAL_ENV || (process.env.NODE_ENV === 'production' ? 'live' : 'sandbox');
+const PAYPAL_API_URLS = {
+  live: 'https://api-m.paypal.com',
+  sandbox: 'https://api-m.sandbox.paypal.com',
+} as const;
+
+const BASE_URL = EXPLICIT_PAYPAL_ENV
+  ? PAYPAL_API_URLS[PAYPAL_ENV === 'live' ? 'live' : 'sandbox']
+  : process.env.PAYPAL_API_URL || PAYPAL_API_URLS[PAYPAL_ENV === 'live' ? 'live' : 'sandbox'];
+
+export function getPayPalEnvironment() {
+  return PAYPAL_ENV === 'live' ? 'live' : 'sandbox';
+}
 
 export async function getPayPalAccessToken() {
   if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
@@ -118,6 +129,7 @@ export async function createPayPalOrder(items: PayPalItem[], subtotal: number, c
       email_address: clienteData.email,
       address: {
         address_line_1: `${clienteData.calle} ${clienteData.numExt}`,
+        address_line_2: [clienteData.colonia, clienteData.referencias].filter(Boolean).join(' | ').slice(0, 300),
         admin_area_2: clienteData.ciudad,
         admin_area_1: clienteData.estado,
         postal_code: clienteData.cp,
