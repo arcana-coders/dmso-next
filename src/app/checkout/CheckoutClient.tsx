@@ -503,6 +503,10 @@ export default function CheckoutClient() {
         )}
 
         <PaymentSealBadges />
+
+        <p className="mt-6 text-center text-[10px] text-gray-500 font-medium leading-relaxed max-w-xs mx-auto">
+          Al completar tu compra, aceptas nuestros <Link href="/terminos-y-condiciones" className="underline">Términos y Condiciones</Link> y <Link href="/aviso-de-privacidad" className="underline">Aviso de Privacidad</Link>.
+        </p>
       </div>
     </div>
   );
