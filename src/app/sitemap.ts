@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { db } from '@/lib/db';
 import { productos, categorias } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
+import { articles } from '@/data/dmso-articles';
 
 export const dynamic = 'force-dynamic'
 
@@ -24,6 +25,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: product.updatedAt || new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.6,
+  }));
+
+  const blogEntries = articles.map((article) => ({
+    url: `${baseUrl}/blog/${article.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
   }));
 
   return [
@@ -52,6 +60,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/aviso-de-privacidad`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
@@ -63,6 +77,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly',
       priority: 0.2,
     },
+    ...blogEntries,
     ...categoryEntries,
     ...productEntries,
   ];

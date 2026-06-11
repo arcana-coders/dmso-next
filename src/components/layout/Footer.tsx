@@ -34,6 +34,11 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
+                                <Link href="/blog" className="text-on-surface-variant hover:text-primary text-sm transition-colors duration-200">
+                                    Blog
+                                </Link>
+                            </li>
+                            <li>
                                 <Link href="/categoria-producto/dmso-liquido" className="text-on-surface-variant hover:text-primary text-sm transition-colors duration-200">
                                     DMSO Líquido
                                 </Link>
@@ -63,6 +68,11 @@ export default function Footer() {
                             <li>
                                 <Link href="/contact" className="text-on-surface-variant hover:text-primary text-sm transition-colors duration-200">
                                     Contacto
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/blog" className="text-on-surface-variant hover:text-primary text-sm transition-colors duration-200">
+                                    Artículos y Guías
                                 </Link>
                             </li>
                             <li>

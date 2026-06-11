@@ -14,8 +14,8 @@ export default function Mission() {
                             Creemos en el poder de este solvente orgánico para transformar vidas, ofreciendo una alternativa natural y efectiva.
                             Trabajamos bajo estrictos estándares de calidad para garantizar que cada gota que recibes sea segura y efectiva.
                         </p>
-                        <Link href="/dmso-facts" className="bg-dmso-green text-white px-8 py-3 text-sm font-medium rounded-full hover:opacity-90 transition-colors mt-4 inline-block shadow-md">
-                            Conocer más
+                        <Link href="/blog" className="bg-dmso-green text-white px-8 py-3 text-sm font-medium rounded-full hover:opacity-90 transition-colors mt-4 inline-block shadow-md">
+                            Leer blog
                         </Link>
                     </div>
                     <div className="space-y-10">

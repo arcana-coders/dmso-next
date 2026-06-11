@@ -51,6 +51,7 @@ export default function Navbar({ categories = [], products = [] }: { categories?
     const navLinks = [
         { name: 'Inicio', href: '/', hasDropdown: false },
         { name: 'Productos', href: '/shop', hasDropdown: false },
+        { name: 'Blog', href: '/blog', hasDropdown: false },
         ...categories.map(cat => ({
             name: cat.nombre,
             href: `/categoria-producto/${cat.slug}`,

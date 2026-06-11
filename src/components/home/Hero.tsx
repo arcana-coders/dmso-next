@@ -56,8 +56,8 @@ export default function Hero() {
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                                 </svg>
                             </Link>
-                            <Link href="/dmso-facts" className="bg-white text-on-surface border border-outline-variant hover:bg-surface-container-low px-10 py-5 rounded-xl font-bold transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 text-lg shadow-sm">
-                                Ver Certificados
+                            <Link href="/blog" className="bg-white text-on-surface border border-outline-variant hover:bg-surface-container-low px-10 py-5 rounded-xl font-bold transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 text-lg shadow-sm">
+                                Ir al Blog
                             </Link>
                         </div>
                         

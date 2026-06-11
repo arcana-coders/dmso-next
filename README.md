@@ -1,5 +1,26 @@
 # DMSO México 2.0
 
+## Pertenece a
+
+- Proyecto padre: [DMSO index](../asistente/projects/dmso/index.md)
+- Documento temático principal: [index.md](../asistente/projects/dmso/index.md)
+- Sistema general: [project-documentation-system.md](../asistente/docs/project-documentation-system.md)
+
+## Regla de pertenencia
+
+```text
+archivo o componente -> dmso-next -> projects/dmso/index.md -> asistente
+```
+
+## Papel de este repo
+
+Superficie operativa de la tienda `dmso.com.mx`: frontend Next.js, backend, checkout PayPal, correos, catálogo y despliegue en Vercel.
+
+Reglas:
+
+- `.env`, `.env.local`, logs locales y credenciales no van a Git.
+- Si aparece un artefacto recurrente importante, debe quedar documentado también en `projects/dmso/index.md`.
+
 Tienda oficial de DMSO México construida con el [Blueprint Maestro (v1.5) de E-commerce Premium](file:///C:/Asistente/ECOM_BLUEPRINT.md).
 
 ## Historial del Proyecto
