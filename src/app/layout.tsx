@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 600; // Categorías y productos del navbar se regeneran cada 10 min
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";

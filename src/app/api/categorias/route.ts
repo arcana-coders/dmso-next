@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { categorias } from '@/lib/schema'
 import { asc, eq } from 'drizzle-orm'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600;
 
 export async function GET() {
   try {

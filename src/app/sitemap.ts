@@ -4,14 +4,22 @@ import { productos, categorias } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { articles } from '@/data/dmso-articles';
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600; // Sitemap se regenera máximo 1 vez por hora
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.dmso.com.mx';
 
-  // Fetch active categories and products from DB
-  const dbCategories = await db.select().from(categorias).where(eq(categorias.activa, true));
-  const dbProducts = await db.select().from(productos).where(eq(productos.activo, true));
+  // Fetch active categories and products from DB — si la BD falla, el sitemap sigue con las rutas estáticas
+  let dbCategories: typeof categorias.$inferSelect[] = [];
+  let dbProducts: typeof productos.$inferSelect[] = [];
+  try {
+    [dbCategories, dbProducts] = await Promise.all([
+      db.select().from(categorias).where(eq(categorias.activa, true)),
+      db.select().from(productos).where(eq(productos.activo, true)),
+    ]);
+  } catch (e) {
+    console.error('sitemap: DB unavailable, returning static-only sitemap', e);
+  }
 
   const categoryEntries = dbCategories.map((cat) => ({
     url: `${baseUrl}/categoria-producto/${cat.slug}`,
