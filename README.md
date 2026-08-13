@@ -50,5 +50,9 @@ Este proyecto sigue la arquitectura de **Núcleo Rígido + Diseño Flexible**:
 3. Configurar `.env` (ver `.env.example`).
 4. Correr servidor de desarrollo: `npm run dev`
 
+## Operación de catálogo
+
+El procedimiento para reducir el catálogo, conservar los productos elegidos y mantener redirecciones permanentes de las URLs retiradas está documentado en [docs/depuracion-catalogo-y-redirecciones.md](docs/depuracion-catalogo-y-redirecciones.md).
+
 ---
 *Documento mantenido de acuerdo al ECOM_BLUEPRINT de Arturo Carrillo.*

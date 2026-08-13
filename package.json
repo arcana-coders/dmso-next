@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build && node scripts/copy-standalone-assets.mjs",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "export:review": "tsx generate_review_csv.ts"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

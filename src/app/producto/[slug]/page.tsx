@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ProductGallery from '@/components/product/ProductGallery';
 import ProductInfo from '@/components/product/ProductInfo';
@@ -8,6 +8,7 @@ import RelatedProducts from '@/components/product/RelatedProducts';
 import { getProductBySlug } from '@/lib/products';
 
 import { type Metadata } from 'next';
+import retiredProductRedirects from '@/data/retiredProductRedirects.json';
 
 interface ProductPageProps {
     params: Promise<{
@@ -36,6 +37,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
     const product = await getProductBySlug(slug);
 
     if (!product) {
+        notFound();
+    }
+
+    if (!product.activo) {
+        const destination = retiredProductRedirects[slug as keyof typeof retiredProductRedirects];
+        if (destination) permanentRedirect(`/producto/${destination}`);
         notFound();
     }
 
@@ -127,4 +134,3 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </main>
     );
 }
-

@@ -46,4 +46,8 @@ test_db.ts
 *.tsbuildinfo
 next-env.d.ts
 
+# Archivos locales de revisión de catálogo; el mapa final de redirecciones sí se versiona.
+/revision_articulos_publicados.csv
+/revision_articulos_publicados.ods
+
 .vercel
