@@ -29,6 +29,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
         description: product.descripcion
             ? `${product.descripcion.substring(0, 150)}...`
             : `Adquiere ${product.titulo} de alta pureza. Envío a todo México.`,
+        alternates: {
+            canonical: `/producto/${product.slug}`,
+        },
     };
 }
 

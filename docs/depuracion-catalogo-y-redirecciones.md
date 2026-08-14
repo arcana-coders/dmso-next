@@ -11,6 +11,8 @@ La tienda se depura mediante una hoja de revisión sin borrar productos de la ba
 
 El detalle de cada destino está en [`../redirecciones_articulos_retirados.csv`](../redirecciones_articulos_retirados.csv). El mapa que usa la aplicación está en [`../src/data/retiredProductRedirects.json`](../src/data/retiredProductRedirects.json).
 
+Las URLs históricas detectadas por Google Search Console se documentan en [`auditoria-indexacion-2026-08-14.md`](auditoria-indexacion-2026-08-14.md). Sus redirecciones confirmadas viven por separado en [`../src/data/legacyRedirects.json`](../src/data/legacyRedirects.json) y se aplican antes de consultar la base de datos.
+
 ## Cómo repetir el proceso
 
 1. Exportar los productos activos con `npm run export:review`.
