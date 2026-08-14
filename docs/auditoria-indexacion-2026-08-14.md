@@ -6,6 +6,20 @@ Elaborado a partir de Google Search Console — 14 de agosto de 2026
 
 > Estado de implementación: `sitemap.xml` fue enviado a Google Search Console. Las 40 rutas únicas marcadas con confianza **Alta** se incorporaron como redirecciones HTTP 301. Las rutas marcadas **Media** o **Revisar** permanecen pendientes de validación comercial.
 
+## Despliegue y verificación — 14 de agosto de 2026
+
+- Commit operativo en Gitea: `843cb5d` (`fix(seo): recuperar URLs históricas del catálogo`).
+- Autor Git: `Arturo Carrillo <ryscarrillo@gmail.com>`.
+- Vercel Production: `dpl_8ihuqTfw36tXiiiWu6HbYmbo5ccm`.
+- Dominio asignado: `https://www.dmso.com.mx`.
+- Verificación posterior al despliegue:
+  - URL histórica de producto: HTTP 301 al producto canónico.
+  - Categoría antigua: HTTP 301 a la categoría vigente.
+  - URL heredada con `?add-to-cart`: HTTP 301 y eliminación del parámetro.
+  - `/sitemap.xml`: HTTP 200.
+  - `/shop`: HTTP 200.
+  - Ficha activa: HTTP 200 y canonical absoluta correcta.
+
 ## 1. Resumen ejecutivo
 
 Hoy Google tiene indexadas solo 4 páginas de dmso.com.mx (la home, el checkout, una ficha de producto y la página de contacto), de 126 URLs conocidas. Hace tres meses (mediados de mayo de 2026) el sitio tenía cerca de 50 páginas indexadas; la caída ha sido constante desde entonces.
