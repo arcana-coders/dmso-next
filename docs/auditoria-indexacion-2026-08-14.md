@@ -20,6 +20,24 @@ Elaborado a partir de Google Search Console — 14 de agosto de 2026
   - `/shop`: HTTP 200.
   - Ficha activa: HTTP 200 y canonical absoluta correcta.
 
+## Consolidación de dominio y propiedad GSC — 16 de agosto de 2026
+
+Se detectó que la propiedad verificada en Search Console era de tipo "Prefijo de URL" para `https://dmso.com.mx` (sin `www`), verificada por archivo HTML (commit `42ec8e3`). Esto no coincide con el dominio canónico real del sitio (`https://www.dmso.com.mx`, usado en `robots.ts`, `sitemap.ts`, `metadataBase` y OpenGraph de `layout.tsx`), y causaba que la Inspección de URLs rechazara cualquier URL con `www` por no pertenecer a esa propiedad.
+
+Acciones:
+
+- DNS del dominio identificado en Namecheap (nameservers `ns-parking.com`) pero con "DNS Type" delegado a cPanel de Hostinger (por la integración de correo, MX `mx1/mx2.hostinger.mx`). Los registros se gestionan desde el Zone Editor de Hostinger, no desde Namecheap.
+- Se agregó el registro TXT de verificación de Google en el Zone Editor de Hostinger.
+- Se creó y verificó la propiedad de **Dominio** (`dmso.com.mx`) en Search Console, que cubre automáticamente `www`/sin-`www`/`http`/`https`. La propiedad de prefijo anterior se conserva (no se borra) solo por su historial de rendimiento.
+- Se corrigió el redirect de dominio en Vercel (Settings → Domains): `dmso.com.mx` → `www.dmso.com.mx` estaba configurado como `307` (temporal); se cambió a permanente (`308`). Verificado en vivo:
+  ```
+  curl -I https://dmso.com.mx/
+  HTTP/1.1 308 Permanent Redirect
+  Location: https://www.dmso.com.mx/
+  ```
+- Se envió `https://www.dmso.com.mx/sitemap.xml` en la nueva propiedad de Dominio.
+- Verificación manual: varias URLs de producto revisadas por el propietario ya figuran como indexadas en Google.
+
 ## 1. Resumen ejecutivo
 
 Hoy Google tiene indexadas solo 4 páginas de dmso.com.mx (la home, el checkout, una ficha de producto y la página de contacto), de 126 URLs conocidas. Hace tres meses (mediados de mayo de 2026) el sitio tenía cerca de 50 páginas indexadas; la caída ha sido constante desde entonces.
