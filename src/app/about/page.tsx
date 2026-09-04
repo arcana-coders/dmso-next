@@ -9,7 +9,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
           <div className="space-y-8">
             <div className="inline-flex items-center gap-2 bg-[#f2f4f6] px-4 py-2 rounded-full border border-[#c2c6d4]">
-              <CheckCircle className="text-[#003f87] w-4 h-4" />
+              <CheckCircle className="text-[#143A2C] w-4 h-4" />
               <span className="text-[12px] font-bold uppercase tracking-widest text-[#424752]">Precisión Científica</span>
             </div>
             <h1 className="text-5xl font-bold leading-tight tracking-tight text-[#191c1e]">
@@ -86,15 +86,15 @@ export default function AboutPage() {
               </p>
               <div className="space-y-4">
                 <div className="flex items-center gap-4 bg-[#f7f9fb] p-4 rounded-lg border border-[#c2c6d4]">
-                  <CheckCircle className="text-[#006c4a] w-5 h-5" />
+                  <CheckCircle className="text-[#10B981] w-5 h-5" />
                   <span className="text-sm font-semibold text-[#191c1e]">100% Cumplimiento Fiscal (SAT)</span>
                 </div>
                 <div className="flex items-center gap-4 bg-[#f7f9fb] p-4 rounded-lg border border-[#c2c6d4]">
-                  <CheckCircle className="text-[#006c4a] w-5 h-5" />
+                  <CheckCircle className="text-[#10B981] w-5 h-5" />
                   <span className="text-sm font-semibold text-[#191c1e]">Documentación de Origen de EE. UU. Verificada</span>
                 </div>
                 <div className="flex items-center gap-4 bg-[#f7f9fb] p-4 rounded-lg border border-[#c2c6d4]">
-                  <CheckCircle className="text-[#006c4a] w-5 h-5" />
+                  <CheckCircle className="text-[#10B981] w-5 h-5" />
                   <span className="text-sm font-semibold text-[#191c1e]">Facturación Oficial Disponible</span>
                 </div>
               </div>
@@ -102,11 +102,11 @@ export default function AboutPage() {
             <div className="flex justify-center lg:justify-end">
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-[#f7f9fb] p-6 rounded-xl border border-[#c2c6d4] text-center shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center aspect-square">
-                  <ShieldCheck className="w-10 h-10 text-[#003f87] mb-4" />
+                  <ShieldCheck className="w-10 h-10 text-[#143A2C] mb-4" />
                   <span className="text-xs font-bold uppercase tracking-widest text-[#191c1e]">Control de Calidad Estricto</span>
                 </div>
                 <div className="bg-[#f7f9fb] p-6 rounded-xl border border-[#c2c6d4] text-center shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center aspect-square mt-8">
-                  <div className="w-10 h-10 text-[#003f87] mb-4">
+                  <div className="w-10 h-10 text-[#143A2C] mb-4">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
                       <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h1a.3.3 0 1 0 .2-.3" />
                       <path d="M13 15h8" />

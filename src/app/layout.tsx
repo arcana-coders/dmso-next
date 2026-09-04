@@ -1,6 +1,6 @@
 export const revalidate = 600; // Categorías y productos del navbar se regeneran cada 10 min
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
+import { Plus_Jakarta_Sans, Playfair_Display, Newsreader } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/layout/CartDrawer";
@@ -16,6 +16,13 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 const playfairDisplay = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
+  display: 'swap',
+});
+
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  style: ["italic", "normal"],
   display: 'swap',
 });
 
@@ -56,7 +63,7 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning className="scroll-smooth">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
         <script
@@ -64,7 +71,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body suppressHydrationWarning className={`${plusJakartaSans.variable} ${playfairDisplay.variable} bg-background text-on-background font-body-md antialiased`}>
+      <body suppressHydrationWarning className={`${plusJakartaSans.variable} ${playfairDisplay.variable} ${newsreader.variable} bg-background text-on-background font-body-md antialiased`}>
         <Navbar categories={categories} products={allProducts} />
         {children}
         <Footer />

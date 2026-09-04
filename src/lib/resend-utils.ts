@@ -64,7 +64,7 @@ function customerEmailHtml({
           </div>
         ` : ''}
 
-        <div style="background:#003f87;color:#ffffff;border-radius:18px 18px 0 0;padding:24px;">
+        <div style="background:#143A2C;color:#ffffff;border-radius:18px 18px 0 0;padding:24px;">
           <div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;opacity:.85;">DMSO Mexico</div>
           <div style="font-size:28px;font-weight:900;margin-top:8px;">Gracias por tu compra</div>
           <div style="font-size:15px;line-height:1.6;margin-top:10px;opacity:.9;">
@@ -75,7 +75,7 @@ function customerEmailHtml({
         <div style="background:#ffffff;border:1px solid #e5e7eb;border-top:0;border-radius:0 0 18px 18px;padding:24px;">
           <div style="display:block;background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:18px;margin-bottom:22px;">
             <div style="font-size:12px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Numero de pedido</div>
-            <div style="font-size:22px;color:#003f87;font-weight:800;margin-top:4px;">${escapeHtml(orderId)}</div>
+            <div style="font-size:22px;color:#143A2C;font-weight:800;margin-top:4px;">${escapeHtml(orderId)}</div>
           </div>
 
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin-bottom:22px;">
@@ -103,7 +103,7 @@ function customerEmailHtml({
 
           <div style="margin-top:22px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:14px;padding:18px;text-align:right;">
             <div style="font-size:12px;color:#047857;font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Total pagado</div>
-            <div style="font-size:28px;color:#006c4a;font-weight:900;margin-top:4px;">${formatMoney(total)}</div>
+            <div style="font-size:28px;color:#10B981;font-weight:900;margin-top:4px;">${formatMoney(total)}</div>
           </div>
 
           <div style="margin-top:22px;border-top:1px solid #e5e7eb;padding-top:18px;color:#374151;font-size:14px;line-height:1.7;">
@@ -199,7 +199,7 @@ Tu pedido sera procesado a la brevedad. Si tienes dudas, responde este correo.`,
               </div>
             ` : ''}
 
-            <div style="background:#003f87;color:#ffffff;border-radius:18px 18px 0 0;padding:22px 24px;">
+            <div style="background:#143A2C;color:#ffffff;border-radius:18px 18px 0 0;padding:22px 24px;">
               <div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;opacity:.85;">DMSO Mexico</div>
               <div style="font-size:24px;font-weight:800;margin-top:6px;">Nueva venta recibida</div>
             </div>
@@ -207,7 +207,7 @@ Tu pedido sera procesado a la brevedad. Si tienes dudas, responde este correo.`,
             <div style="background:#ffffff;border:1px solid #e5e7eb;border-top:0;border-radius:0 0 18px 18px;padding:24px;">
               <div style="display:block;background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:18px;margin-bottom:22px;">
                 <div style="font-size:12px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Numero de orden</div>
-                <div style="font-size:22px;color:#003f87;font-weight:800;margin-top:4px;">${escapeHtml(orderId)}</div>
+                <div style="font-size:22px;color:#143A2C;font-weight:800;margin-top:4px;">${escapeHtml(orderId)}</div>
               </div>
 
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin-bottom:22px;">
@@ -240,7 +240,7 @@ Tu pedido sera procesado a la brevedad. Si tienes dudas, responde este correo.`,
 
               <div style="margin-top:22px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:14px;padding:18px;text-align:right;">
                 <div style="font-size:12px;color:#047857;font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Total pagado</div>
-                <div style="font-size:28px;color:#006c4a;font-weight:900;margin-top:4px;">${formatMoney(total)}</div>
+                <div style="font-size:28px;color:#10B981;font-weight:900;margin-top:4px;">${formatMoney(total)}</div>
               </div>
             </div>
           </div>

@@ -68,7 +68,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
             '@type': 'Offer',
             price: product.precio,
             priceCurrency: 'MXN',
-            availability: 'https://schema.org/InStock',
+            availability: (product.stock ?? 0) > 0
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/PreOrder',
             url: `${baseUrl}/producto/${product.slug}`
         },
         ...((product.reviews as any[])?.length > 0 ? {
@@ -124,6 +126,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         asin={product.asin || undefined}
                         imagen={(product.imagenes as string[])?.[0] || ''}
                         reviewsCount={(product.reviews as any[])?.length || 0}
+                        stock={product.stock ?? 0}
                     />
                     <ProductAccordion 
                         description={product.descripcion || ''} 

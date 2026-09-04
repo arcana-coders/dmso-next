@@ -13,6 +13,7 @@ interface Product {
     precio: string;
     imagenes: any[];
     categoria?: { nombre: string; slug: string } | null;
+    stock?: number | null;
 }
 
 interface ShopGridProps {
@@ -22,7 +23,13 @@ interface ShopGridProps {
 export default function ShopGrid({ products }: ShopGridProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
+    const [soloEnvioInmediato, setSoloEnvioInmediato] = useState(false);
     const addItem = useCartStore((s) => s.addItem);
+
+    const envioInmediatoCount = useMemo(
+        () => products.filter((p) => (p.stock ?? 0) > 0).length,
+        [products]
+    );
 
     // Extract unique categories from products
     const categories = useMemo(() => {
@@ -53,6 +60,11 @@ export default function ShopGrid({ products }: ShopGridProps) {
             result = result.filter(p => p.categoria?.slug === activeCategory);
         }
 
+        // Envío inmediato filter
+        if (soloEnvioInmediato) {
+            result = result.filter(p => (p.stock ?? 0) > 0);
+        }
+
         // Search filter
         if (searchQuery.trim()) {
             const normalizedQuery = searchQuery.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -63,11 +75,12 @@ export default function ShopGrid({ products }: ShopGridProps) {
         }
 
         return result;
-    }, [products, activeCategory, searchQuery]);
+    }, [products, activeCategory, searchQuery, soloEnvioInmediato]);
 
     const clearFilters = () => {
         setSearchQuery('');
         setActiveCategory(null);
+        setSoloEnvioInmediato(false);
     };
 
     const handleAddToCart = (event: MouseEvent<HTMLButtonElement>, product: Product) => {
@@ -86,7 +99,7 @@ export default function ShopGrid({ products }: ShopGridProps) {
         });
     };
 
-    const hasFilters = searchQuery || activeCategory;
+    const hasFilters = searchQuery || activeCategory || soloEnvioInmediato;
 
     return (
         <>
@@ -125,6 +138,18 @@ export default function ShopGrid({ products }: ShopGridProps) {
                         >
                             Todos ({products.length})
                         </button>
+                        {envioInmediatoCount > 0 && (
+                            <button
+                                onClick={() => setSoloEnvioInmediato((prev) => !prev)}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                                    soloEnvioInmediato
+                                        ? 'bg-secondary text-white shadow-md'
+                                        : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
+                                }`}
+                            >
+                                Servicio Express ({envioInmediatoCount})
+                            </button>
+                        )}
                         {categories.map((cat) => (
                             <button
                                 key={cat.slug}

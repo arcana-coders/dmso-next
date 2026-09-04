@@ -2,6 +2,8 @@ import Hero from '@/components/home/Hero';
 import TrustBar from '@/components/home/TrustBar';
 import ProductsSection from '@/components/home/ProductsSection';
 import ProcessSection from '@/components/home/ProcessSection';
+import InstitutionalCallout from '@/components/home/InstitutionalCallout';
+import { getEnvioInmediatoProducts } from '@/lib/products';
 import { type Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -14,13 +16,17 @@ export const metadata: Metadata = {
   }
 };
 
-export default function Home() {
+export default async function Home() {
+  const productosEnStock = await getEnvioInmediatoProducts(3);
+  const hasEnvioInmediato = productosEnStock.length > 0;
+
   return (
     <main>
-      <Hero />
-      <TrustBar />
+      <Hero hasEnvioInmediato={hasEnvioInmediato} productosEnStock={productosEnStock as any} />
+      <TrustBar hasEnvioInmediato={hasEnvioInmediato} />
       <ProductsSection />
       <ProcessSection />
+      <InstitutionalCallout />
     </main>
   );
 }

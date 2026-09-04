@@ -3,7 +3,7 @@ import { db } from '@/lib/db';
 import { ordenes, productos } from '@/lib/schema';
 import { capturePayPalOrder, getPayPalEnvironment } from '@/lib/paypal';
 import { sendOrderConfirmationEmail } from '@/lib/resend-utils';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 
 type CartItem = {
   id?: string | number;
@@ -143,6 +143,20 @@ export async function POST(
       },
       items: secureItems,
     });
+
+    // Descuenta el inventario real de envío inmediato (nunca baja de 0).
+    // Así el "máximo por cliente" que se muestra en el sitio refleja lo que
+    // de verdad queda en la bodega.
+    try {
+      for (const item of secureItems) {
+        await db
+          .update(productos)
+          .set({ stock: sql`GREATEST(${productos.stock} - ${item.cantidad}, 0)` })
+          .where(eq(productos.id, item.productoId));
+      }
+    } catch (stockErr) {
+      console.error('Error descontando stock tras la compra:', stockErr);
+    }
 
     try {
       await sendOrderConfirmationEmail({

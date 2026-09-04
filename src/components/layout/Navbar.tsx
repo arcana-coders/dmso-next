@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronDown, Facebook, Instagram, Menu, X, ShoppingCart } from 'lucide-react';
+import { ChevronDown, Facebook, Instagram, Menu, X, ShoppingCart, Zap } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 import SearchModal from './SearchModal';
 
@@ -19,6 +19,7 @@ interface Product {
     precio: string;
     imagenes: string[];
     categoria?: { nombre: string; slug: string } | null;
+    stock?: number | null;
 }
 
 export default function Navbar({ categories = [], products = [] }: { categories?: Category[]; products?: Product[] }) {
@@ -27,6 +28,7 @@ export default function Navbar({ categories = [], products = [] }: { categories?
     const cartItems = useCartStore((s) => s.items);
     const openCart = useCartStore((s) => s.openCart);
     const cartCount = cartItems.reduce((sum, i) => sum + i.cantidad, 0);
+    const hasEnvioInmediato = products.some((p) => (p.stock ?? 0) > 0);
 
     // Lock body scroll when menu is open
     useEffect(() => {
@@ -64,15 +66,36 @@ export default function Navbar({ categories = [], products = [] }: { categories?
     return (
         <>
             {/* TopBar */}
-            <div className="bg-primary text-white text-[10px] py-2 text-center px-4 relative z-[60] font-black uppercase tracking-[0.15em]">
-                <p>Envío Gratis a Todo México en Pedidos Superiores a $999 MXN</p>
+            <div className="bg-primary text-white text-[11px] py-2.5 px-4 relative z-[60] font-medium tracking-wide border-b border-secondary/30">
+                <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center sm:justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                        {hasEnvioInmediato ? (
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary/20 text-secondary text-[10px] font-semibold border border-secondary/30 uppercase tracking-wider">
+                                <Zap className="w-2.5 h-2.5" fill="currentColor" strokeWidth={0} />
+                                Servicio Express en México
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary/20 text-secondary text-[10px] font-semibold border border-secondary/30 uppercase tracking-wider">
+                                Envío a Todo México
+                            </span>
+                        )}
+                        <span className="text-white/30 hidden sm:inline">•</span>
+                        <span className="text-white/90 hidden sm:inline text-xs">Grado farmacéutico 99.9%, envíos rastreados</span>
+                    </div>
+                    <span className="text-white text-[10px] font-semibold bg-secondary/25 px-2.5 py-0.5 rounded-md border border-secondary/25">
+                        Envío Gratis en Pedidos Superiores a $999 MXN
+                    </span>
+                </div>
             </div>
 
             {/* MainHeader */}
             <header className="bg-surface sticky top-0 z-50 transition-all duration-300 border-b border-outline-variant font-bold text-xs tracking-widest uppercase">
                 <div className="max-w-[1280px] mx-auto flex justify-between items-center px-6 h-20 relative">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 z-[60] relative active:scale-95 transition-transform">
+                    <Link href="/" className="flex items-center gap-2.5 z-[60] relative active:scale-95 transition-transform">
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-primary-container flex items-center justify-center shadow-md shadow-primary/20 text-secondary flex-shrink-0">
+                            <span className="material-symbols-outlined text-[20px]">spa</span>
+                        </div>
                         <span className={`text-2xl font-black tracking-tighter cursor-pointer transition-colors duration-300 ${isMenuOpen ? 'text-white' : 'text-primary'}`}>
                             DMSO México
                         </span>
@@ -136,7 +159,7 @@ export default function Navbar({ categories = [], products = [] }: { categories?
                     } lg:hidden flex flex-col pt-24`}
             >
                 {/* Decorative Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-container to-[#001a33] pointer-events-none opacity-90"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-container to-[#08150f] pointer-events-none opacity-90"></div>
 
                 {/* Close Button */}
                 <button

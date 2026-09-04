@@ -1,29 +1,46 @@
 import Link from 'next/link';
-import { getFeaturedProducts } from '@/lib/products';
+import { getFeaturedProducts, getProducts } from '@/lib/products';
 import ProductsList from './ProductsList';
 
 export default async function ProductsSection() {
-    const featuredProducts = await getFeaturedProducts(4);
+    const [featuredProducts, allProducts] = await Promise.all([
+        getFeaturedProducts(4),
+        getProducts(),
+    ]);
 
     return (
-        <section className="bg-white py-24 border-b border-outline-variant relative overflow-hidden">
-            <div className="max-w-[1280px] mx-auto px-6 relative z-10">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+        <section className="py-16 sm:py-20 bg-surface" id="catalogo">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-primary/10">
                     <div>
-                        <h2 className="text-3xl md:text-4xl font-black text-on-surface tracking-tighter mb-4">
-                            Productos Clínicos
+                        <span className="text-xs font-bold uppercase tracking-widest text-primary bg-secondary/10 px-3 py-1 rounded-full">
+                            Formulaciones Certificadas
+                        </span>
+                        <h2 className="text-2xl sm:text-3xl font-bold text-primary tracking-tight mt-3">
+                            Catálogo Integral de Soluciones
                         </h2>
-                        <p className="text-on-surface-variant font-body-lg max-w-2xl leading-relaxed">
-                            Nuestra línea de DMSO grado farmacéutico, fabricada bajo estrictos estándares de control de calidad para uso profesional.
+                        <p className="mt-2 text-on-surface-variant text-sm max-w-xl font-normal">
+                            Línea completa disponible para compra individual y órdenes especializadas con garantía de autenticidad.
                         </p>
                     </div>
-                    <Link href="/shop" className="bg-surface-container hover:bg-surface-container-high text-on-surface px-6 py-3 rounded-lg font-bold transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <span className="text-xs font-semibold text-primary bg-white px-3 py-1.5 rounded-full border border-primary/10 shadow-2xs flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-secondary"></span> {allProducts.length} Formulaciones Disponibles
+                        </span>
+                    </div>
+                </div>
+
+                <ProductsList products={featuredProducts} />
+
+                <div className="mt-10 flex justify-center">
+                    <Link
+                        href="/shop"
+                        className="bg-primary hover:bg-primary-container text-white px-6 py-3 rounded-lg font-bold transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap shadow-sm"
+                    >
                         Ver Catálogo Completo
                         <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                     </Link>
                 </div>
-
-                <ProductsList products={featuredProducts} />
             </div>
         </section>
     );

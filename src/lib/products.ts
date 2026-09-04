@@ -1,6 +1,6 @@
 import { db } from './db';
 import { productos, categorias } from './schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, and, gt, desc } from 'drizzle-orm';
 
 export async function getProducts() {
   try {
@@ -14,6 +14,7 @@ export async function getProducts() {
         precio: true,
         imagenes: true,
         asin: true,
+        stock: true,
       },
       with: {
         categoria: {
@@ -35,6 +36,8 @@ export async function getFeaturedProducts(limit = 4) {
   try {
     const featured = await db.query.productos.findMany({
       where: eq(productos.activo, true),
+      // Prioriza productos con envío inmediato (stock real) en el destacado del home
+      orderBy: [desc(productos.stock), desc(productos.destacado), desc(productos.id)],
       limit: limit,
       with: {
         categoria: true
@@ -43,6 +46,27 @@ export async function getFeaturedProducts(limit = 4) {
     return featured;
   } catch (error) {
     console.error('Error fetching featured products from DB:', error);
+    return [];
+  }
+}
+
+// Productos con inventario físico real en México, listos para envío inmediato
+// (ver journal 2026-09-03: stock corregido a mano por Arturo, ya no es el
+// default de importación). Trae reseñas/descripción completas para el
+// showcase del hero.
+export async function getEnvioInmediatoProducts(limit = 3) {
+  try {
+    const productosEnStock = await db.query.productos.findMany({
+      where: and(eq(productos.activo, true), gt(productos.stock, 0)),
+      orderBy: [desc(productos.stock), desc(productos.id)],
+      limit,
+      with: {
+        categoria: true
+      }
+    });
+    return productosEnStock;
+  } catch (error) {
+    console.error('Error fetching envío inmediato products from DB:', error);
     return [];
   }
 }
